@@ -1,0 +1,47 @@
+# We're using version 3.7 of the Docker Compose file format
+version: "3.7"
+
+# Define services/containers
+services:
+  # MySQL container
+  mysql:
+    hostname: mysql
+    # Use mysql:8.0.19 image
+    build: ./database
+    volumes:
+      - ./data/db:/var/lib/mysql
+    # Connect to "my-network" network, as defined below
+    networks:
+      - my-network
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+    ports: 
+      - "3306:3306"
+        
+    # Pass a list of environment variables to the container
+    environment:
+      TZ: "Europe/Bucharest"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: entity_relation_platform
+      MYSQL_USER: er_admin
+      MYSQL_PASSWORD: root
+
+  er-backend:
+    # image: php:5.6-apache 
+    build: ./backend-image
+    volumes:
+      - ./src:/var/www/html 
+    networks:
+      - my-network
+    ports:
+      - "80:80"
+    environment:
+      PMA_HOST: mysql
+      TZ: "Europe/Bucharest"
+      DATABASE_NAME: entity_relation_platform
+    depends_on:
+      - mysql
+
+# Define networks
+networks:
+  my-network:
