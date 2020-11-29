@@ -13,16 +13,14 @@ $router->handlePost(function ($http, $body) {
     // var_dump ((array)$body);
     // exit();
     $userData = $user->findUserByEmail($body->email);
-
-    if(!$userData || !password_verify($body->password, $userData["password"])) {
-        $http->notAuthorized("Either the user account doesn't exist or the password is wrong.");
+    if(!$userData) {
+        $http->notAuthorized("The email you typed isn't registered.");
+    }
+    if($body->password !== $userData["password"]) {
+        $http->notAuthorized("The account password is invalid.");
     }
     $http->ok(null, "Authentication succeeded.");
 });
-
-$router->handleGet(function ($http, $body) {
-});
-
 
 $router->run();
 ?>
