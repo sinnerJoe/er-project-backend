@@ -12,17 +12,25 @@ $router->handlePost(function ($http, $body) {
     global $user;
     // var_dump ((array)$body);
     // exit();
-    $data = (array)$body;
-    $data['password'] = password_hash($body->password, PASSWORD_BCRYPT);
+    $data = array( 
+        'password' => password_hash($body['password'], PASSWORD_BCRYPT),
+        'email' => $body['email'],
+        'last_name' => $body['last_name'],
+        'first_name' => $body['first_name'],
+        'college_group' => $body['college_group']
+  ); 
     try {
         $user->register($data);
     } catch(Exception $e) {
-        $http->badRequest("The user is already registered.".$e->getMessage().$data['password']);
+        $http->badRequest("The user is already registered.".$e->getMessage());
     }
     $http->ok(null, "You registerd successfully.");
 });
 
-$router->handleGet(function ($http, $body) {
+$router->handleGet(function ($http) {
+    global $user;
+
+    
 });
 
 

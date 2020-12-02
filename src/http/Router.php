@@ -62,9 +62,9 @@ class Router {
 
     public function run() {
         $this->renderHeaders();
-        $method =$_SERVER['REQUEST_METHOD'];
+        $method = $_SERVER['REQUEST_METHOD'];
         $request_body = file_get_contents('php://input');
-        if($request_body) $request_body = json_decode($request_body);
+        if($request_body) $request_body = json_decode($request_body, true);
         try{
             if(isset($this->handlers[$method])) {
                 $this->handlers[$method]($this->http, $request_body);
