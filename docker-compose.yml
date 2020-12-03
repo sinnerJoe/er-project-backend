@@ -9,7 +9,7 @@ services:
     # Use mysql:8.0.19 image
     build: ./database
     volumes:
-      - ./data/db:/var/lib/mysql
+      - ./database/data:/var/lib/mysql
     # Connect to "my-network" network, as defined below
     networks:
       - my-network

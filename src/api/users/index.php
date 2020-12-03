@@ -17,7 +17,7 @@ $router->handlePost(function ($http, $body) {
         'email' => $body['email'],
         'last_name' => $body['last_name'],
         'first_name' => $body['first_name'],
-        'college_group' => $body['college_group']
+        // 'college_group' => $body['college_group']
   ); 
     try {
         $user->register($data);
