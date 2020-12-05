@@ -93,7 +93,8 @@ class Solution extends Model {
         //     return $solution;
         // });
 
-        $obj = new DataHierarchy('solution_id', [              
+        $obj = new DataHierarchy([              
+                '_index' => 'solution_id',
                 'solution_id' => 'solutionId',
                 'user_id' => 'userId',
                 'planned_assign_id' => 'plannedAssignmentId',
@@ -102,14 +103,24 @@ class Solution extends Model {
                 'mark' => 'mark',
                 'reviewed_by' => 'reviewedBy',
                 'reviewed_at' => 'reviewedAt',
-                'title' => 'title'
+                'title' => 'title',
+                'diagrams' => [
+                    '_index' => 'diagram_id',
+                    'diagram_id' => 'diagramId',
+                    'name' => 'name',
+                    'content' => 'content',
+                    'filepath' => 'image'
+                ],
+                // 'assignments' => [
+                //     '_index' => 'assign_id',
+                //     'start_date' => 'startDate',
+                //     'end_date' => 'endDate',
+                //     'description' => 'description',
+                //     'a_title' => 'title'
+                // ]
             ]);
-            return $obj->addLayer('diagram_id', 'diagrams', [
-                'diagram_id' => 'diagramId',
-                'name' => 'name',
-                'content' => 'content',
-                'filepath' => 'image'
-            ])->orderData($results);
+            return $obj->orderData($results);
+        
         
 
     }
