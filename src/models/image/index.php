@@ -31,6 +31,10 @@ class Image extends Model {
     public function getImagePath($imageId) {
         return $this->fetchOne('getFilePath.sql', ['image_id' => $imageId]);
     }
+
+    public static function getImageUrl($imageName) {
+        return self::$IMAGE_FOLDER.'/'.$imageName;
+    }
     
     public function getFullPath($filename) {
         return __DIR__.'/../../'.(self::$IMAGE_FOLDER).'/'.$filename;

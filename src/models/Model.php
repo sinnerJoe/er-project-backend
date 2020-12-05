@@ -44,31 +44,23 @@ class Model {
         return pick($dict, $keys);
     }
 
-    private static function yes($el, $i, $arr) {
-        return FALSE;
+    public function fetchCustom($queryFile, $clauses, $arguments) {
+        $query = $this->readQueryFile($queryFile);
+        $queryBuilder = new QueryBuilder($query);
+        $queryBuilder->setCustomFilter(...$clauses);
+
+        return $this->db->fetchAll($queryBuilder->build(), $arguments);
     }
 
-    public static function accumulate_ordered($array, $prop, $initCb, $reducer, $stopCondition = ['Model', 'yes']) {
-        $result = [];
-        $lastResultElement = NULL;
-        $lastVal = NULL;
-        foreach($array as $i => $element) {
-            if($stopCondition($element, $i, $array)) {
-                break;
-            }
-            if($i == 0 || $lastVal != $element[$prop]) {
-                $lastVal = $element[$prop];
-                if($i !== 0) 
-                array_push($result, $lastResultElement);
-                $lastResultElement = $initCb($element, $i, $array);
-            }
-            $reducer($lastResultElement, $element, $i, $array);
-        }
+    public function fetchTest($queryFile, $clauses, $arguments) {
+        $query = $this->readQueryFile($queryFile);
+        $queryBuilder = new QueryBuilder($query);
+        $queryBuilder->setCustomFilter(...$clauses);
 
-        array_push($result, $lastResultElement);
+        echo $queryBuilder->build();
+        exit();
+ }
 
-        return $result;
-    }
 }
 
 ?>

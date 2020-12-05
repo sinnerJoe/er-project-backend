@@ -39,6 +39,7 @@ services:
       PMA_HOST: mysql
       TZ: "Europe/Bucharest"
       DATABASE_NAME: entity_relation_platform
+      PROJECT_ENV: development
     depends_on:
       - mysql
 

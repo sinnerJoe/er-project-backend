@@ -34,12 +34,12 @@ function removeSolutionDiagrams($solutionId) {
         $http->notFound();
     }
 
-    if($sessionData->userId !== $solutionData['user_id'] && $sessionData->role !== 0) {
+    if($sessionData->userId !== $solutionData['userId'] && $sessionData->role !== 0) {
         $http->notAuthorized();
     }
 
-    foreach($solutionData['diagrams'] as $diagramId) {
-        removeDiagram($diagramId);
+    foreach($solutionData['diagrams'] as $diagram) {
+        removeDiagram($diagram['id']);
     }
 }
 
@@ -47,6 +47,7 @@ function saveDiagrams($diagrams, $solutionId) {
 
     $sessionData = getSessionData();
     $solution = new Solution();
+    $image = new Image();
 
     foreach($diagrams as $diagram) {
         $imageId = $image->saveImage($diagram['image'], $sessionData->userId);
@@ -108,6 +109,17 @@ $router->handlePut(function($http, $body) {
 $router->handleGet(function($http, $body) {
     $sessionData = getSessionData();
     $solution = new Solution();
+
+    if(isset($_GET['id'])) {
+        $solutionData = $solution->getFullSolutionById($_GET['id']);
+        if(!$solutionData) {
+            $http->notFound();
+        }
+        if($solutionData['userId'] != $sessionData->userId && $sessionData->role === 10) {
+            $http->notAuthorized();
+        }
+        $http->ok($solutionData);
+    }
 
     $solutions = $solution->getSolutionsOfUser($sessionData->userId);
 

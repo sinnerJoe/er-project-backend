@@ -16,6 +16,21 @@ function pick_translate($dict, $translations) {
     return $result;
 }
 
+function verify_columns_exist($dict, $translations) {
+    if($_ENV['PROJECT_ENV'] !== 'development') {
+        return;
+    }
+    $missing = [];
+    foreach($translations as $key => $translation) {
+        if(!array_key_exists($key, $translations)) {
+            array_push($missing, $key.'('.$translation.')');
+        }
+    }
+    if(count($missing)) {
+        throw new Exception(implode(', ', $missing));
+    }
+} 
+
 class DataLayer {
     public $index;
     public $columns;
@@ -38,6 +53,7 @@ class DataLayer {
 
     public function select($array) {
         $this->last_index = $array[$this->index];
+        verify_columns_exist($array, $this->columns);
         return pick_translate($array, $this->columns);
     }
 
@@ -117,6 +133,99 @@ class DataHierarchy {
         return $dest_array;
         
     }
+}
+
+class OrOp {
+    private $operands;
+    public function __construct(...$operands) {
+        $this->operands = $operands; 
+    }
+
+    public function build() {
+        $strings = [];
+
+        foreach($this->operands as $operand) {
+            if(is_string($operand)) {
+                array_push($strings, $operand);
+            }
+            array_push($operand->build());
+        }
+        return '('.implode(' OR ', $strings).')';
+    }
+}
+
+class AndOp {
+    private $operands;
+    public function __construct(...$operands) {
+        $this->operands = $operands;
+    }
+    public function build() {
+        if(count($this->operands) === 0) {
+            return '';
+        }
+        $strings = [];
+
+        foreach($this->operands as $operand) {
+            if(is_string($operand)) {
+                array_push($strings, $operand);
+            }
+            else if(is_object($operand)) {
+                array_push($operand->build());
+            }
+        }
+        return '('.implode(' AND ', $strings).')';
+    }
+}
+
+function inequality ($left, $right = NULL) {
+
+        if($right === NULL) {
+            $right = ':'.$left;
+        }
+
+        if($right === 'NULL' || $right === 'null') {
+            return $left.' IS NOT NULL';
+        }
+
+        return $left.' != '.$right;
+}
+
+function equality ($left, $right = NULL) {
+
+        if($right === NULL) {
+            $right = ':'.$left;
+        }
+
+        if($right === 'NULL' || $right === 'null') {
+            return $left.' IS NULL';
+        }
+
+        return $left.' = '.$right;
+}
+
+class QueryBuilder {
+    private $query;
+    private $filterExpression;
+    public function __construct($query) {
+        $this->query = $query;
+        $this->filterExpression = NULL;
+    }
+
+    public function setCustomFilter(...$clauses) {
+        if(count($clauses) !== 0) {
+            $this->filterExpression = new AndOp(...$clauses);
+        }
+    }
+
+    public function build() {
+        $resultingQuery = $this->query;
+        
+        if($this->filterExpression !== NULL) {
+            $resultingQuery = 'WITH FIRST_QUERY_LAYER AS ('.$resultingQuery.') SELECT * FROM FIRST_QUERY_LAYER WHERE '.$this->filterExpression->build();
+        }
+        return $resultingQuery;
+    }
+
 }
 
 
