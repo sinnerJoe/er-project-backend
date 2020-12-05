@@ -6,17 +6,12 @@ require_once(__DIR__.'/session.php');
 
 $router = new Router(false);
 
-$user = new User();
-
 $router->handlePost(function ($http, $body) {
-    // echo $_POST;
-    global $user;
-    // var_dump ((array)$body);
-    // exit();
+    $user = new User();
     $userData = $user->findUserByEmail($body['email']);
 
     if(!$userData || !password_verify($body['password'], $userData["password"])) {
-        $http->notAuthorized("Either the user account doesn't exist or the password is wrong.");
+        $http->notAuthenticated("Either the user account doesn't exist or the password is wrong.");
     }
     registerSession($userData['user_id']);
     loginSession();
@@ -24,7 +19,7 @@ $router->handlePost(function ($http, $body) {
 });
 
 $router->handleGet(function ($http, $body) {
-    global $user;
+    $user = new User();
     loginSession();
     $sessionData = getSessionData();
     if($sessionData->authenticated) {
@@ -38,10 +33,9 @@ $router->handleGet(function ($http, $body) {
 });
 
 $router->handleDelete(function ($http, $body) {
-    global $user;
+    $user = new User();
     logoutSession();
     $http->ok(null, "Session ended.");
 });
 
-$router->run();
 ?>

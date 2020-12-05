@@ -5,7 +5,7 @@ class HttpResponse {
     public function badRequest($message) {
         http_response_code(400);
         echo json_encode(array(
-            "date" => date("d/m/Y H:i:s"),
+            // "date" => date("d/m/Y H:i:s"),
             "error_type" => "invalid_parameter",
             "message" => $message
         ));
@@ -15,7 +15,6 @@ class HttpResponse {
     public function serverFault($message) {
         http_response_code(500);
         echo json_encode(array(
-            "date" => date("d/m/Y H:i:s"),
             "error_type" => "internal_server_error",
             "message" => $message
         ));
@@ -25,7 +24,6 @@ class HttpResponse {
     public function badMethod($message) {
         http_response_code(405);
         echo json_encode(array(
-            "date" => date("d/m/Y H:i:s"),
             "status" => "invalid_method",
             "message" => $message
         ));
@@ -35,7 +33,6 @@ class HttpResponse {
     public function maximumCallsExceeded() {
         http_response_code(402);
         echo json_encode(array(
-            "date" => date("d/m/Y H:i:s"),
             "status" => "maximul_calls_exceeded",
             "message" => "Maximum calls executed"
         ));
@@ -45,18 +42,25 @@ class HttpResponse {
     public function notFound($message) {
         http_response_code(404);
         echo json_encode(array(
-            "date" => date("d/m/Y H:i:s"),
             "status" => "not_found",
             "message" => $message 
         ));
         exit();
     }
 
-    public function notAuthorized($message) {
+    public function notAuthorized($message = "Not authorized to access the resource.") {
+        http_response_code(403);
+        echo json_encode(array(
+            "status" => "not_authorized",
+            "message" => $message
+        ));
+        exit();
+    }
+
+    public function notAuthenticated($message = "You have to be authenticated to access the resource.") {
         http_response_code(401);
         echo json_encode(array(
-            "date" => date("d/m/Y H:i:s"),
-            "status" => "unauthorized",
+            "status" => "not_authenticated",
             "message" => $message
         ));
         exit();
@@ -66,7 +70,6 @@ class HttpResponse {
     public function ok($data=null, $message=null) {
         http_response_code(200);
         $response = array(
-            "date" => date("d/m/Y H:i:s"),
             "status" => "success",
             "message" => $message,
             "data" => $data

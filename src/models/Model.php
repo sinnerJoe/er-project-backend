@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__."/../config/database.php");
+require_once(__DIR__."/../utils/utils.php");
 
 class Model {
     private $db;
@@ -37,6 +38,36 @@ class Model {
     public function fetchAll($queryFile, $arguments=null) {
         $query = $this->readQueryFile($queryFile);
         return $this->db->fetchAll($query, $arguments);
+    }
+
+    public static function pick($dict, $keys) {
+        return pick($dict, $keys);
+    }
+
+    private static function yes($el, $i, $arr) {
+        return FALSE;
+    }
+
+    public static function accumulate_ordered($array, $prop, $initCb, $reducer, $stopCondition = ['Model', 'yes']) {
+        $result = [];
+        $lastResultElement = NULL;
+        $lastVal = NULL;
+        foreach($array as $i => $element) {
+            if($stopCondition($element, $i, $array)) {
+                break;
+            }
+            if($i == 0 || $lastVal != $element[$prop]) {
+                $lastVal = $element[$prop];
+                if($i !== 0) 
+                array_push($result, $lastResultElement);
+                $lastResultElement = $initCb($element, $i, $array);
+            }
+            $reducer($lastResultElement, $element, $i, $array);
+        }
+
+        array_push($result, $lastResultElement);
+
+        return $result;
     }
 }
 

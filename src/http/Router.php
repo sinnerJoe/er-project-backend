@@ -3,11 +3,12 @@
 require_once(__DIR__.'/HttpResponse.php');
 require_once(__DIR__.'/Headers.php');
 require_once(__DIR__.'/../config/database.php');
+require_once(__DIR__.'/../api/auth/session.php');
 
 $secureRoute = function ($controller) {
     return function ($http) {
         if(isset($_SESSION['PHP_AUTH_USER']) && !isset($_SERVER['PHP_AUTH_PW'])) {
-            $http->notAuthorized("You must authenticate to use this service.");
+            $http->notAuthenticated("You must authenticate to use this service.");
             exit(); 
         }
 
@@ -21,7 +22,7 @@ $secureRoute = function ($controller) {
         $userData = $db->fetchOne($query, [$username]);
 
         if(!$userData || $userData['password'] !== $password) {
-            $http->notAuthorized("You provided wrong credentials.");
+            $http->notAuthenticated("You provided wrong credentials.");
             exit();
         }
 
@@ -31,43 +32,74 @@ $secureRoute = function ($controller) {
     };
 };
 
+class Route {
+    private $validators;
+    private $handler;
+    public function __construct($handler) {
+        $this->handler = $handler;
+        $this->validators = [];
+    }
+
+    public function addValidator($validatorFn) {
+        array_push($this->validators, $validatorFn);
+    }
+
+    public function run($http, $request_body) {
+        foreach($this->validators as $validator) {
+            $validator($http, $request_body);
+        }
+        $handler = $this->handler;
+        $handler($http, $request_body);
+    }
+}
+
 class Router {
-    private $handlers;
-    private $secured = true;
+    private $routes;
     private $http;
 
-    public function __construct($secured = true) {
-        $this->handlers = array();
-        $this->secured = $secured;
+    public function __construct() {
+        $this->routes = array();
         $this->http = new HttpResponse();
     }
 
     public function handlePost($handler) {
-        $this->handlers['POST'] = $handler;
+        $route = new Route($handler);
+        $this->routes['POST'] = $route;
+        return $route;
     }
 
     public function handlePut($handler) {
-        $this->handlers['PUT'] = $handler;
+        $route = new Route($handler);
+        $this->routes['PUT'] = $route;
+        return $route;
     }
     public function handleDelete($handler) {
-        $this->handlers['DELETE'] = $handler;
+        $route = new Route($handler);
+        $this->routes['DELETE'] = $route;
+        return $route;
     }
     public function handleGet($handler) {
-        $this->handlers['GET'] = $handler;
+        $route = new Route($handler);
+        $this->routes['GET'] = $route;
+        return $route;
     }
 
     private function renderHeaders() {
-        Headers::sendHeaders(array_keys($this->handlers));
+        Headers::sendHeaders(array_keys($this->routes));
     }
 
-    public function run() {
+    public function getSessionData() {
+        return getSessionData();
+    }
+
+    private function run() {
         $this->renderHeaders();
         $method = $_SERVER['REQUEST_METHOD'];
         $request_body = file_get_contents('php://input');
         if($request_body) $request_body = json_decode($request_body, true);
         try{
-            if(isset($this->handlers[$method])) {
-                $this->handlers[$method]($this->http, $request_body);
+            if(isset($this->routes[$method])) {
+                $this->routes[$method]->run($this->http, $request_body);
             }
         }catch(Exception $e) {
             $this->http->serverFault($e->getMessage());
@@ -76,6 +108,10 @@ class Router {
             $this->http->badMethod("The method \"$method\" isn't supported.");
         }
     }
+    public function __destruct() {
+        $this->run();
+    }
+
 }
 
 ?>

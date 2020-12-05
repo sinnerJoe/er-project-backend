@@ -12,11 +12,13 @@ $router->handlePost(function ($http, $body) {
     global $user;
     // var_dump ((array)$body);
     // exit();
+    
     $data = array( 
         'password' => password_hash($body['password'], PASSWORD_BCRYPT),
         'email' => $body['email'],
         'last_name' => $body['last_name'],
         'first_name' => $body['first_name'],
+        // TODO: put college group back
         // 'college_group' => $body['college_group']
   ); 
     try {
@@ -35,11 +37,4 @@ $router->handleGet(function ($http) {
 
 
 
-
-
-
-
-
-
-$router->run();
 ?>

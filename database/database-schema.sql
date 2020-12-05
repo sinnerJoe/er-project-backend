@@ -1,5 +1,7 @@
 -- HELPER FUNCTIONS 
 
+DROP FUNCTION IF EXISTS in_year;
+
 CREATE FUNCTION in_year(checked_date date, y INT) RETURNS BOOLEAN DETERMINISTIC
 BEGIN 
 	RETURN checked_date BETWEEN STR_TO_DATE(concat(y, '-09-01'), '%Y-%m-%d') 
@@ -91,6 +93,7 @@ CREATE TABLE IF NOT EXISTS images (
 
 CREATE TABLE IF NOT EXISTS diagram (
 	diagram_id INT AUTO_INCREMENT PRIMARY KEY,
+	solution_id INT NOT NULL REFERENCES solution(solution_id),
 	name varchar(64),
 	content TEXT NOT NULL,
 	image_id INT NULL REFERENCES images(image_id)

@@ -1,0 +1,1 @@
+SELECT filepath from images WHERE image_id = :image_id

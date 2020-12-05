@@ -22,14 +22,12 @@ function registerSession($userId) {
 
 function loginSession() {
     if(session_status() != PHP_SESSION_ACTIVE) {
-        echo "NO SESSION";
         return FALSE;
     }
     $user = new User();
     $userData = $user->loginSession();
 
     if(!is_array($userData)) {
-        echo "USER NOT FOUND".session_id();
         return FALSE;
     }
 
@@ -55,6 +53,7 @@ function logoutSession() {
     unset($_SESSION['role_level'], $sessionData->role);
 
     $user->deleteSession();
+    session_regenerate_id(true);
 }
 
 function deleteOtherSessions() {

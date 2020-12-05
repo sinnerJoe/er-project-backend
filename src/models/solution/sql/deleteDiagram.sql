@@ -1,0 +1,1 @@
+DELETE FROM diagram WHERE diagram_id = :diagram_id
