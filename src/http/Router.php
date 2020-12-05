@@ -5,33 +5,6 @@ require_once(__DIR__.'/Headers.php');
 require_once(__DIR__.'/../config/database.php');
 require_once(__DIR__.'/../api/auth/session.php');
 
-$secureRoute = function ($controller) {
-    return function ($http) {
-        if(isset($_SESSION['PHP_AUTH_USER']) && !isset($_SERVER['PHP_AUTH_PW'])) {
-            $http->notAuthenticated("You must authenticate to use this service.");
-            exit(); 
-        }
-
-        $username = $_SERVER['PHP_AUTH_USER'];
-        $password = $_SERVER['PHP_AUTH_PW'];
-
-        $query = "SELECT * user_account WHERE email = ?";
-
-        $db = Database::getInstance();
-
-        $userData = $db->fetchOne($query, [$username]);
-
-        if(!$userData || $userData['password'] !== $password) {
-            $http->notAuthenticated("You provided wrong credentials.");
-            exit();
-        }
-
-        $user_id = $userData['user_id'];
-
-        $controller($http);
-    };
-};
-
 class Route {
     private $validators;
     private $handler;
@@ -55,7 +28,7 @@ class Route {
 
 class Router {
     private $routes;
-    private $http;
+    public $http;
 
     public function __construct() {
         $this->routes = array();

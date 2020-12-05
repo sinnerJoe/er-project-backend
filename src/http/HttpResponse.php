@@ -39,7 +39,7 @@ class HttpResponse {
         exit();
     }
 
-    public function notFound($message) {
+    public function notFound($message="Resource not found.") {
         http_response_code(404);
         echo json_encode(array(
             "status" => "not_found",

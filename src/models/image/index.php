@@ -18,11 +18,14 @@ class Image extends Model {
 
     public function deleteImage($imageId, $filename) {
         $this->deleteImageFile($filename);
-        return $this->execute('deleteImage.sql', $imageId);
+        return $this->execute('deleteImage.sql', ['image_id' => $imageId]);
     }
 
     public function deleteImageFile($filename) {
-        unlink($this->getFullPath($filename));
+        $fullPath = $this->getFullPath($filename);
+        if(file_exists($fullPath)) {
+            unlink($fullPath);
+        }
     }
 
     public function getImagePath($imageId) {

@@ -22,7 +22,7 @@ class Solution extends Model {
             return NULL;
         }
 
-        $data = Model::pick(results[0], [
+        $data = Model::pick($results[0], [
             'title',
             'solution_id',
             'user_id',
@@ -35,7 +35,7 @@ class Solution extends Model {
 
         $data['diagrams'] = array_map(function($row) {
             return $row['diagram_id'];
-        });
+        }, $results);
 
         return $data;
     }
@@ -62,40 +62,9 @@ class Solution extends Model {
         }
 
 
-        // var_dump($results);
-
-        // return Model::accumulate_ordered($results, 'solution_id', 
-        // function($row) {
-        //     $solution = Model::pick($row, [
-        //         'solution_id',
-        //         'user_id',
-        //         'planned_assign_id',
-        //         'created_at',
-        //         'updated_at',
-        //         'mark',
-        //         'reviewed_by',
-        //         'reviewed_at',
-        //         'title'
-        //     ]);
-        //     $solution['diagrams'] = [];
-        //     return $solution;
-        // },
-        // function($solution, $row) {
-        //     array_push(
-        //         $solution['diagrams'], 
-        //         Model::pick($row, [
-        //             'diagram_id',
-        //             'name',
-        //             'content',
-        //             'filepath'
-        //         ])
-        //     );
-        //     return $solution;
-        // });
-
         $obj = new DataHierarchy([              
                 '_index' => 'solution_id',
-                'solution_id' => 'solutionId',
+                'solution_id' => 'id',
                 'user_id' => 'userId',
                 'planned_assign_id' => 'plannedAssignmentId',
                 'created_at' => 'createdAt',
@@ -106,22 +75,12 @@ class Solution extends Model {
                 'title' => 'title',
                 'diagrams' => [
                     '_index' => 'diagram_id',
-                    'diagram_id' => 'diagramId',
+                    'diagram_id' => 'id',
                     'name' => 'name',
                     'content' => 'content',
                     'filepath' => 'image'
                 ],
-                // 'assignments' => [
-                //     '_index' => 'assign_id',
-                //     'start_date' => 'startDate',
-                //     'end_date' => 'endDate',
-                //     'description' => 'description',
-                //     'a_title' => 'title'
-                // ]
             ]);
-            return $obj->orderData($results);
-        
-        
-
+        return $obj->orderData($results);
     }
 }

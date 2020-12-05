@@ -29,6 +29,11 @@ function removeSolutionDiagrams($solutionId) {
     $solution = new Solution();
     $solutionData = $solution->getSolutionById($solutionId);
 
+    $http = new HttpResponse();
+    if(!$solutionData) {
+        $http->notFound();
+    }
+
     if($sessionData->userId !== $solutionData['user_id'] && $sessionData->role !== 0) {
         $http->notAuthorized();
     }
@@ -77,12 +82,11 @@ $router->handlePost(function($http, $body) {
 
 $router->handleDelete(function($http, $body) {
     $sessionData = getSessionData();
-
     removeSolutionDiagrams($body['id']);
 
     $solution = new Solution();
     
-    $solution->removeSolution($body['id']);
+    $solution->deleteSolution($body['id']);
 
     $http->ok(null, "Solution successfully deleted.");
 
