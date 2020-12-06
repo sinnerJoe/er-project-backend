@@ -31,7 +31,7 @@ class Solution extends Model {
         [equality('solution_id')],
         ['solution_id' => $solutionId]);
 
-        return organizeFullSolution($data);
+        return organizeFullSolution($data)[0];
     }
 
     public function deleteDiagram($diagramId) {
@@ -48,5 +48,14 @@ class Solution extends Model {
         ['user_id' => $userId]);
 
         return organizeFullSolution($results);
+    }
+
+    public function refreshUpdatedAt($solutionId) {
+        return $this->patch(
+            'solution', 
+            ['updated_at' => 'NOW()'], 
+            [equality('solution_id')], 
+            ['solution_id' => $solutionId]
+        );
     }
 }

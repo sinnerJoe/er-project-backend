@@ -97,12 +97,13 @@ $router->handleDelete(function($http, $body) {
 
 $router->handlePut(function($http, $body) {
     $sessionData = getSessionData();
+    $solution = new Solution();
 
-    removeSolutionDiagrams($body['id']);
+    removeSolutionDiagrams($_GET['id']);
 
-    saveDiagrams($body['diagrams'], $body['id']);
+    saveDiagrams($body['diagrams'], $_GET['id']);
 
-
+    $solution->refreshUpdatedAt($_GET['id']);
     $http->ok(null, "Solution successfully modified.");
 })->addValidator(is_authenticated);
 

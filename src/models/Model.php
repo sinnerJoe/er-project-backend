@@ -52,6 +52,23 @@ class Model {
         return $this->db->fetchAll($queryBuilder->build(), $arguments);
     }
 
+    public function patch($table, $assignments, $clauses, $arguments) {
+        $query = 'UPDATE '.$table. ' SET ';
+        $equalities = [];
+        foreach($assignments as $column => $value) {
+            array_push($equalities, $column.' = '.$value);
+        }
+        $query = $query.implode(', ', $equalities);
+        if(count($clauses) == 0) {
+            $where = '';
+        } else {
+            $expression = new AndOp(...$clauses);
+            $where = 'WHERE '.$expression->build();
+        }
+        $query = $query.' '.$where;
+        return $this->db->execute($query, $arguments);
+    }
+
     public function fetchTest($queryFile, $clauses, $arguments) {
         $query = $this->readQueryFile($queryFile);
         $queryBuilder = new QueryBuilder($query);
