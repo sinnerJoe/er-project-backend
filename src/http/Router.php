@@ -4,6 +4,7 @@ require_once(__DIR__.'/HttpResponse.php');
 require_once(__DIR__.'/Headers.php');
 require_once(__DIR__.'/../config/database.php');
 require_once(__DIR__.'/../api/auth/session.php');
+require_once(__DIR__.'/../validators/auth.php');
 
 class Route {
     private $validators;
@@ -15,6 +16,7 @@ class Route {
 
     public function addValidator($validatorFn) {
         array_push($this->validators, $validatorFn);
+        return $this;
     }
 
     public function run($http, $request_body) {

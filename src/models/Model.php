@@ -52,7 +52,7 @@ class Model {
         return $this->db->fetchAll($queryBuilder->build(), $arguments);
     }
 
-    public function patch($table, $assignments, $clauses, $arguments) {
+    public function update($table, $assignments, $clauses, $arguments) {
         $query = 'UPDATE '.$table. ' SET ';
         $equalities = [];
         foreach($assignments as $column => $value) {
@@ -66,7 +66,37 @@ class Model {
             $where = 'WHERE '.$expression->build();
         }
         $query = $query.' '.$where;
+        echo $query;
         return $this->db->execute($query, $arguments);
+    }
+
+    public function create($table, $columns, $arguments) {
+        $column_names = array_keys($columns);
+        $column_values = [];
+        foreach($column_names as $name) {
+            array_push($column_values, $columns[$name]);
+        }
+
+        $columns_str = implode(', ', $column_names);
+        $values_str = implode(', ', $column_values);
+
+        $query = "INSERT INTO ".$table."(".$columns_str.") VALUES (".$values_str.")";
+
+        return $this->db->execute($query, $arguments);
+    }
+
+    public function delete($table, $clauses, $arguments) {
+        $expression = new AndOp(...$clauses);
+
+        $query = "DELETE FROM ".$table." WHERE".$expression->build();
+
+        return $this->db->execute($query, $arguments);
+    }
+
+    public function orderData($data, $config) {
+        $obj = new DataHierarchy($config);
+
+        return $obj->orderData($data);
     }
 
     public function fetchTest($queryFile, $clauses, $arguments) {

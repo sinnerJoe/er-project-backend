@@ -17,10 +17,10 @@ function is_authenticated($http, $request_body) {
 
 function is_teacher($http, $request_body) {
    $data = getSessionData();
-   if($data->role === 5 || $data->role === 0){
+   if($data->isAdmin || $data->isTeacher){
       return TRUE;
    }
-   $http->notAuthorized('You must have at least teacher level privileges to access the resource.');
+   $http->notAuthorized('You must have at least teacher level privileges to access the resource. ' );
 }
 
 function is_admin($http, $request_body) {

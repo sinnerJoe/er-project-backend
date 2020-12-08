@@ -51,7 +51,7 @@ class Solution extends Model {
     }
 
     public function refreshUpdatedAt($solutionId) {
-        return $this->patch(
+        return $this->update(
             'solution', 
             ['updated_at' => 'NOW()'], 
             [equality('solution_id')], 

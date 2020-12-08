@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS solution (
 	title varchar(128),
 	user_id INT NOT NULL REFERENCES user_account(user_id),
 	planned_assign_id INT NULL REFERENCES planned_assign(planned_assign_id),
+	submitted_at DATETIME NULL,
 	created_at DATETIME NOT NULL DEFAULT(CURRENT_TIMESTAMP),
 	updated_at DATETIME NOT NULL DEFAULT(CURRENT_TIMESTAMP),
 	mark INT NULL CHECK(mark <= 10 AND mark >= 1 OR mark IS null),

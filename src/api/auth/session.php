@@ -7,7 +7,7 @@ function getSessionData() {
     $data->authenticated = $_SESSION['authenticated'];
     $data->userId = $_SESSION['user_id'];
     $data->email = $_SESSION['email'];
-    $data->role = $_SESSION['role_level'];
+    $data->role = (int)$_SESSION['role_level'];
     $data->isAdmin = $data->role === 0;
     $data->isTeacher = $data->role === 5;
     $data->isStudent = $data->role === 10;
