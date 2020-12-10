@@ -58,6 +58,11 @@ class Router {
         $this->routes['GET'] = $route;
         return $route;
     }
+    public function handlePatch($handler) {
+        $route = new Route($handler);
+        $this->routes['PATCH'] = $route;
+        return $route;
+    }
 
     private function renderHeaders() {
         Headers::sendHeaders(array_keys($this->routes));

@@ -12,7 +12,12 @@ $router->handlePost(function($http, $body) {
 $router->handleGet(function($http, $body) {
     $plan = new Plan();
 
-    $data = $plan->fetchAllPlans();
+    if(isset($_GET['id'])) {
+        $data = $plan->fetchPlanById($_GET['id']);
+    } else {
+        $data = $plan->fetchAllPlans();
+    }
+
     $http->ok($data);
 })->addValidator(is_authenticated)->addValidator(is_teacher);
 
@@ -33,3 +38,11 @@ $router->handleDelete(function($http, $body) {
     $http->ok();
 
 })->addValidator(is_authenticated);
+
+$router->handlePatch(function($http, $body) {
+    $plan = new Plan();
+
+    $plan->updatePlanName($_GET['id'], $body['name']);
+
+    $http->ok();
+})->addValidator(is_authenticated)->addValidator(is_teacher);

@@ -59,4 +59,5 @@ class Assignment extends Model {
     public function deleteAssignment($id) {
         return $this->delete('assign', [equality('assign_id')], ['assign_id' => $id]);
     }
+
 }

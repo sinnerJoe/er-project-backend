@@ -16,3 +16,22 @@ $router->handlePost(function($http, $body) {
 
     $http->ok();
 })->addValidator(is_authenticated)->addValidator(is_teacher);
+
+$router->handlePut(function($http, $body) {
+    $plan = new Plan();
+    foreach($body['assignments'] as $assignment) {
+        $plan->updatePlannedAssignment($assignment['id'], $assignment['startDate'], $assignment['endDate']);
+    }
+    $http->ok();
+})->addValidator(is_authenticated)->addValidator(is_teacher);
+
+$router->handleDelete(function($http, $body) {
+    $plan = new Plan();
+
+    foreach($_GET['ids'] as $id) {
+        $plan->deletePlannedAssignment($id);
+    }
+
+    $http->ok();
+
+})->addValidator(is_authenticated)->addValidator(is_teacher);

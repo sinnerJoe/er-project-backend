@@ -64,4 +64,29 @@ class Plan extends Model {
     public function deletePlannedAssignment($id) {
         return $this->delete('planned_assign', [equality('planned_assign_id')], ['planned_assign_id' => $id]);
     }
+
+    public function updatePlannedAssignment($id, $startDate, $endDate) {
+        return $this->update("planned_assign", [
+            'start_date' => ':start_date',
+            'end_date' => ':end_date'
+        ], [
+            equality('planned_assign_id', ':id')
+        ], [
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'id' => $id
+        ]);
+    }
+
+    public function updatePlanName($id, $name) {
+        return $this->update('plan', [
+            'name' => ':name',
+            'updated_at' => 'NOW()'
+        ],[
+            equality('plan_id')
+        ],[
+            'plan_id' => $id,
+            'name' => $name
+        ]);
+    }
 }
