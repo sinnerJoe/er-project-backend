@@ -36,10 +36,12 @@ class DataLayer {
     public $columns;
     public $children;
     public $last_index;
+    public $only_child;
     
     public function __construct($config) {
         $this->columns = [];
         $this->children = [];
+        $this->only_child = FALSE;
         $this->parseConfig($config);
     }
 
@@ -61,6 +63,8 @@ class DataLayer {
         foreach($config as $key => $value) {
             if($key === '_index') {
                 $this->index = $value;
+            } else if($key === '_single') {
+                $this->only_child = $value;
             } else if(is_array($value)) {
                 $this->children[$key] = new DataLayer($value);
             } else  {
@@ -110,14 +114,21 @@ class DataHierarchy {
         if($usedIndex === NULL || $row[$usedIndex] !== NULL) {
             if($usedIndex === NULL || count($array_to_append) === 0 || $newParent 
             || $row[$usedIndex] !== $currentLayer->last_index) {
-                    array_push($dest_array, $currentLayer->select($row));
+                    if(!$currentLayer->only_child) {
+                        array_push($dest_array, $currentLayer->select($row));
+                    } else {
+                        $dest_array = $currentLayer->select($row);
+                    }   
                     $didCapture = TRUE;
             }
             if($currentLayer->hasChildren()) {
                 foreach($currentLayer->children as $destination => $child) {
-                    $lastParent = &$dest_array[count($dest_array)-1];
+                    if(!$currentLayer->only_child)
+                        $lastParent = &$dest_array[count($dest_array)-1];
+                    else 
+                        $lastParent = &$dest_array;
                     $next_dest = $lastParent[$destination];
-                    if(!is_array($next_dest)) $next_dest = [];
+                    if(!isset($next_dest)) $next_dest = [];
 
                     $lastParent[$destination] = $this->captureData(
                         $next_dest,

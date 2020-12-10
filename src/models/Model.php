@@ -82,7 +82,7 @@ class Model {
 
         $query = "INSERT INTO ".$table."(".$columns_str.") VALUES (".$values_str.")";
 
-        return $this->db->execute($query, $arguments);
+        return $this->db->execute($query, $arguments)->pdo;
     }
 
     public function delete($table, $clauses, $arguments) {
