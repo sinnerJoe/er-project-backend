@@ -35,7 +35,7 @@ class Model {
         return $this->db->fetchOne($query, $arguments);
     }
 
-    public function fetchAll($queryFile, $arguments=null) {
+    public function fetchAll($queryFile, $arguments=[]) {
         $query = $this->readQueryFile($queryFile);
         return $this->db->fetchAll($query, $arguments);
     }

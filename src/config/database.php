@@ -28,6 +28,7 @@ class Database {
     public function fetchAll($query, $arguments){
         $stmt = $this->pdo->prepare($query);
         if($arguments) $stmt->execute($arguments);
+        else $stmt->execute();
         $rowCount = $stmt->rowCount();
         if($rowCount <= 0) {
             return [];
@@ -57,23 +58,6 @@ class Database {
         return self::$instance;
         
     }
-
-    
-
-    // public function executeCall($username, $call_allowed, $timeoutSeconds) {
-    //     $query = "SELECT plan, calls_made, time_start, time_end
-    //               FROM users
-    //               where username = :username
-    //     ";
-    //     $this->fetchOne($query, array(":username" => $username));
-
-    //     $timeOut = date(time()) - $results['time_start'] >= $timeOutSeconds || $results['time_start'] === 0;
-    
-    //     $query = "UPDATE users
-    //             SET calls_made = :calls 
-    //     "
-    //     $this->fetchOne($query, array(':calls' => $timeout ? ""))
-    // }
 
     public function execute($query, $arguments=array()) {
         $stmt = $this->pdo->prepare($query);

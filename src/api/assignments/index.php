@@ -15,9 +15,13 @@ $router->handlePost(function ($http, $body) {
 
 $router->handleGet(function ($http) {
     $assignment = new Assignment();
-
-    $data = $assignment->getAssignment($_GET['id']);
-
+    
+    if(isset($_GET['id'])) {
+        $data = $assignment->getAssignment($_GET['id']);
+    } else {
+        $data = $assignment->getAllAssignments();
+    }    
+    
     $http->ok($data);
 })->addValidator(is_authenticated);
 

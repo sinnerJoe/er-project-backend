@@ -32,17 +32,28 @@ class Assignment extends Model {
         );
     }
 
+    private function orderAssignmentData($assignments) {
+        return $this->orderData($assignments, [
+            '_index' => 'assign_id',
+            'assign_id' => 'id',
+            'title' => 'title',
+            'description' => 'description',
+            'updated_at' => 'updatedAt'
+        ]);
+    }
+
     public function getAssignment($id) {
-        $data = $this->fetchCustom('getAssignment.sql',
+        $data = $this->fetchCustom('getAssignments.sql',
             [equality('assign_id')],
             ['assign_id' => $id]
         );
 
-        return $this->orderData($data, [
-            'title' => 'title',
-            'description' => 'description',
-            'updated_at' => 'updatedAt'
-        ])[0];
+        return $this->orderAssignmentData($data)[0];
+    }
+
+    public function getAllAssignments() {
+        $data = $this->fetchAll("getAssignments.sql");
+        return $this->orderAssignmentData($data);
     }
 
     public function deleteAssignment($id) {
