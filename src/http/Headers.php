@@ -16,7 +16,7 @@
             if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
                 header('Access-Control-Allow-Origin: *');
                 // header('Content-Type: application/json');
-                header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");         
+                header("Access-Control-Allow-Methods: ".implode(', ', $actions));         
                    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
                     // header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Methods, Access-Control-Allow-Credentials, X-Requested-With');
                     header("Access-Control-Allow-Headers: accept-language, accept-encoding, cookie, ". $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);

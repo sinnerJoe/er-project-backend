@@ -103,6 +103,10 @@ class DataHierarchy {
 
         $dest_array = &$array_to_append;
 
+        // if(is_array($dest_array) && !count($dest_array)) {
+        //     return
+        // }
+
         $didCapture = FALSE;
 
         $usedIndex = $currentLayer->index;
@@ -128,7 +132,7 @@ class DataHierarchy {
                     else 
                         $lastParent = &$dest_array;
                     $next_dest = $lastParent[$destination];
-                    if(!isset($next_dest)) $next_dest = [];
+                    if(!isset($next_dest) && !$child->only_child) $next_dest = [];
 
                     $lastParent[$destination] = $this->captureData(
                         $next_dest,

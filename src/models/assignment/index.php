@@ -60,4 +60,43 @@ class Assignment extends Model {
         return $this->delete('assign', [equality('assign_id')], ['assign_id' => $id]);
     }
 
+    public function getAllStudentAssignments($studentId) {
+       $data = $this->fetchCustom('getFullAssignments.sql', 
+       [equality('student_id')], 
+       ['student_id' => $studentId]
+    );
+
+        return $this->orderData($data, [
+            '_index' => 'planned_assign_id',
+            'start_date' => 'startDate',
+            'end_date' => 'endDate',
+            'assignment' => [
+                '_index' => 'assign_id',
+                '_single' => TRUE,
+                'assign_id' => 'id',
+                'title' => 'title',
+                'description' => 'description'
+            ],
+            'solution' => [
+                '_index' => 'solution_id',
+                '_single' => TRUE,
+                'solution_id' => 'id',
+                'solution_title' => 'title',
+                'submitted_at' => 'submittedAt',
+                'created_at' => 'createdAt',
+                'updated_at' => 'updatedAt',
+                'mark' => 'mark',
+                'reviewed_at' => 'reviewedAt'
+            ],
+            'reviewer' => [
+                '_index' => 'teacher_id',
+                '_single' => TRUE,
+                'teacher_id' => 'id',
+                'first_name' => 'firstName',
+                'last_name' => 'lastName'
+            ]
+        ]);
+
+    }
+
 }

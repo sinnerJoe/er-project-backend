@@ -66,7 +66,6 @@ class Model {
             $where = 'WHERE '.$expression->build();
         }
         $query = $query.' '.$where;
-        echo $query;
         return $this->db->execute($query, $arguments);
     }
 

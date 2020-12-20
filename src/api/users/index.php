@@ -28,12 +28,26 @@ $router->handlePost(function ($http, $body) {
     $http->ok(null, "You registerd successfully.");
 });
 
-$router->handleGet(function ($http) {
-    global $user;
-
+$router->handleGet(function ($http, $body) {
+    $user = new User();
     
+    if($_GET['role'] === 'teacher') {
+        $http->ok($user->getTeachers($_GET['year'])); 
+    }
+
+    if($_GET['role'] === 'student') {
+        $http->ok($user->fetchByRole(10));
+    }
 });
 
+$router->handlePatch(function($http, $body) {
+    $user = new User();
+
+    if($_GET['target'] === 'group') {
+        $user->changeGroup($_GET['id'], $body['groupId']);
+        $http->ok();
+    }
+})->addValidator(is_authenticated)->addValidator(is_teacher);
 
 
 ?>

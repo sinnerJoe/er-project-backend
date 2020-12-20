@@ -8,6 +8,17 @@ BEGIN
 							AND STR_TO_DATE(concat(y + 1, '-09-01'), '%Y-%m-%d') - INTERVAL 1 DAY;
 END;
 
+DROP FUNCTION IF EXISTS date_gte;
+
+CREATE FUNCTION date_gte(one datetime, two datetime) RETURNS BOOLEAN DETERMINISTIC
+BEGIN
+	DECLARE month1 INT DEFAULT 0;
+	DECLARE month2 INT DEFAULT 0;
+	SET month1 = IF(MONTH(one) >= 9, MONTH(one) - 8, MONTH(one) + 4);
+	SET month2 = IF(MONTH(two) >= 9, MONTH(two) - 8, MONTH(two) + 4);
+	RETURN STRCMP(CONCAT(LPAD(month1, 2, '0'), DATE_FORMAT(one, '%d%T') ),
+			concat(LPAD(month2, 2, '0'), DATE_FORMAT(two, '%d%T') )) >= 0;
+END;
 -- HELPER FUNCTIONS END
 
 -- CLEANUP

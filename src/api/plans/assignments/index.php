@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__.'/../../../models/plan/index.php');
+require_once(__DIR__.'/../../../models/assignment/index.php');
 require_once(__DIR__.'/../../../http/Router.php');
 $router = new Router();
 
@@ -35,3 +36,10 @@ $router->handleDelete(function($http, $body) {
     $http->ok();
 
 })->addValidator(is_authenticated)->addValidator(is_teacher);
+
+$router->handleGet(function($http, $body) {
+    $assignment = new Assignment();
+    $sessionData = getSessionData();
+    $data = $assignment->getAllStudentAssignments($sessionData->userId);
+    $http->ok($data);
+})->addValidator(is_authenticated);
