@@ -127,5 +127,45 @@ $router->handleGet(function($http, $body) {
     $http->ok($solutions);
 })->addValidator(is_authenticated);
 
+function checkCanStatusBeChanged($plannedAssignmentId) {
+    $solution = new Solution();
+    $sessionData = getSessionData();
+    $solutionData = $solution->getSolutionById($_GET['id']);
+    if(!$solutionData) {
+        $http->notFound('Solution not found');
+    }
+    if($solutionData['userId'] !== $sessionData->userId) {
+        $http->notAuthorized("You aren't the owner of the solution.");
+    }
+    if($solutionData['reviewedAt'] !== null) {
+        $http->notAuthorized("This solution was already reviewed, you cannot resubmit it");
+    }
+
+    $reviewdSolutions = $solution->fetchReviewedSolutions($sessionData->userId, $plannedAssignmentId);
+    if(count($reviewdSolutions) > 0) {
+        $http->notAuthorized("Your solution to this assignment was already reviewed. You cannot change it anymore.");
+    }
+}
+
+$router->handlePatch(function($http, $body) {
+    $solution = new Solution();
+    $sessionData = getSessionData();
+    $plannedAssignmentId = $body['plannedAssignmentId'];
+
+        if($_GET['target'] === 'submit') {
+            
+            checkCanStatusBeChanged($plannedAssignmentId);
+
+            $solution->unsubmitOthers($sessionData->userId, $plannedAssignmentId);
+            $solution->submit($_GET['id'], $plannedAssignmentId);
+            $http->ok();
+        } else if($_GET['target'] === 'unsubmit') {
+            checkCanStatusBeChanged($plannedAssignmentId);
+            $solution->unsubmit($_GET['id']);
+
+            $http->ok();
+        }
+})->addValidator(is_authenticated);
+
 
 ?>

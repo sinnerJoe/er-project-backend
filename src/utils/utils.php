@@ -162,8 +162,9 @@ class OrOp {
         foreach($this->operands as $operand) {
             if(is_string($operand)) {
                 array_push($strings, $operand);
+            } else if(is_object($operand)) {
+                array_push($strings, $operand->build());
             }
-            array_push($operand->build());
         }
         return '('.implode(' OR ', $strings).')';
     }
@@ -185,11 +186,20 @@ class AndOp {
                 array_push($strings, $operand);
             }
             else if(is_object($operand)) {
-                array_push($operand->build());
+                array_push($strings, $operand->build());
             }
         }
         return '('.implode(' AND ', $strings).')';
     }
+}
+
+
+function isNull($value) {
+    return $value.' IS NULL';
+}
+
+function isNotNull($value) { 
+    return $value.' IS NOT NULL';
 }
 
 function inequality ($left, $right = NULL) {
@@ -199,7 +209,7 @@ function inequality ($left, $right = NULL) {
         }
 
         if($right === 'NULL' || $right === 'null') {
-            return $left.' IS NOT NULL';
+            return isNotNull($left);
         }
 
         return $left.' != '.$right;
@@ -212,10 +222,21 @@ function equality ($left, $right = NULL) {
         }
 
         if($right === 'NULL' || $right === 'null') {
-            return $left.' IS NULL';
+            return isNull($left);
         }
 
         return $left.' = '.$right;
+}
+
+function equalityOrNull($left, $right = NULL) {
+    if($right === NULL) {
+        $right = ':'.$left;
+    }
+
+    $obj = new OrOp(equality($left, $right), isNull($right));
+
+    return $obj;
+    
 }
 
 class QueryBuilder {

@@ -19,10 +19,8 @@ $router->handleGet(function ($http) {
     if(isset($_GET['id'])) {
         $data = $assignment->getAssignment($_GET['id']);
     } else {
-        
-            $data = $assignment->getAllAssignments();
-        }
-    }    
+        $data = $assignment->getAllAssignments();
+    }
     
     $http->ok($data);
 })->addValidator(is_authenticated);

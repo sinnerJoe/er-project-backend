@@ -58,4 +58,66 @@ class Solution extends Model {
             ['solution_id' => $solutionId]
         );
     }
+
+    public function submit($solutionId, $plannedAssignmentId) {
+        return $this->update(
+            'solution',
+            [
+                'submitted_at' => 'NOW()',
+                'planned_assign_id' => ':plannedAssign'
+            ],
+            [equality('solution_id')],
+            [
+                'plannedAssign' => $plannedAssignmentId,
+                'solution_id' => $solutionId,
+            ]);
+    }
+
+    public function unsubmitOthers($userId, $plannedAssignmentId) {
+        return $this->update(
+            'solution',
+            [
+                'submitted_at' => 'NULL',
+                'planned_assign_id' => 'NULL'
+            ],
+            [
+                equality('planned_assign_id', ':plannedAssign'),
+                equality('user_id')
+            ],
+            [
+                'plannedAssign' => $plannedAssignmentId,
+                'user_id' => $userId
+            ]);
+    }
+
+    public function unsubmit($solutionId) {
+        return $this->update(
+            'solution',
+            [
+                'submitted_at' => 'NULL',
+                'planned_assign_id' => 'NULL'
+            ],
+            [
+                equality('solution_id')
+            ],
+            [
+                'solution_id' => $solutionId
+            ]
+        );
+    }
+
+    public function fetchReviewedSolutions($userId, $plannedAssignmentId = NULL) {
+        $results = $this->fetchCustom('getFullSolutions.sql', 
+        [
+            equality('user_id'), 
+            equalityOrNull('planned_assign_id'), 
+            isNotNull('reviewed_by')
+        ],
+        [
+            'user_id' => $userId,
+            'planned_assign_id' => $plannedAssignmentId
+        ]);
+        
+        return organizeFullSolution($results);
+    }
 }

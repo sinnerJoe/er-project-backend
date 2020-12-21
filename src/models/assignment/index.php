@@ -68,6 +68,7 @@ class Assignment extends Model {
 
         return $this->orderData($data, [
             '_index' => 'planned_assign_id',
+            'planned_assign_id' => 'id',
             'start_date' => 'startDate',
             'end_date' => 'endDate',
             'assignment' => [
