@@ -15,6 +15,18 @@ class Group extends Model {
         ]);
     }
 
+    public function getSubmissionGroups($year) {
+        $data = $this->fetchCustom('getSubmissionGroups.sql', [equality('ed_year')], ['ed_year' => $year]);
+
+        return $this->orderData($data, [
+            '_index' => 'college_group_id',
+            'college_group_id' => 'id',
+            'ed_year' => 'year',
+            'name' => 'name',
+            'unchecked_count' => 'uncheckedSubmissionCount'
+        ]);
+    }
+
     public function getGroups($year) {
         $data = $this->fetchCustom('getGroups.sql', [equality('ed_year')], ['ed_year' => $year]);
 

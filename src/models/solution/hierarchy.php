@@ -30,6 +30,7 @@ function organizeFullSolution($data) {
                 '_index' => 'diagram_id',
                 'diagram_id' => 'id',
                 'name' => 'name',
+                'type' => 'type',
                 'content' => 'content',
                 'filepath' => 'image'
             ],
@@ -57,6 +58,7 @@ function organizePartialSolution($data) {
             'diagrams' => [
                 '_index' => 'diagram_id',
                 'diagram_id' => 'id',
+                'type' => 'type'
             ],
         ]
    );

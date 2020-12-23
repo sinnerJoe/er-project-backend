@@ -120,4 +120,30 @@ class Solution extends Model {
         
         return organizeFullSolution($results);
     }
+
+    public function getSolutionReviewer($solutionId) {
+        return $this->fetchOne('getReviewer.sql', ['id' => $solutionId]);
+    }
+
+    public function putMark($solutionId, $teacherId, $mark) {
+        $params = [
+            'mark' => $mark ? $mark : NULL,
+            'reviewed_by' => $teacherId,
+            'solution_id' => $solutionId
+        ];
+
+        if(!$mark) {
+            unset($params['reviewed_by']);
+        }
+        return $this->update('solution', [
+            'mark' => ':mark',
+            'reviewed_at' => $mark ? 'NOW()' : 'NULL',
+            'reviewed_by' => $mark ? ':reviewed_by': 'NULL'
+        ],[
+            equality('solution_id')
+        ],
+        $params
+        );
+    }
+
 }

@@ -110,3 +110,5 @@ CREATE TABLE IF NOT EXISTS diagram (
 	content TEXT NOT NULL,
 	image_id INT NULL REFERENCES images(image_id)
 );
+
+ALTER TABLE diagram ADD COLUMN `type` varchar(8) NOT NULL DEFAULT('er');

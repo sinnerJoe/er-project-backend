@@ -100,4 +100,62 @@ class Assignment extends Model {
 
     }
 
+    public function getPlannedAssignmentsForEvaluation($groupId, $plannedAssignmentId = NULL) {
+        $data = $this->fetchCustom('getAssignmentsWithSolutions.sql',
+            [
+                equality('college_group_id'),
+                equalityOrNull('planned_assign_id')
+            ],
+            [
+                'college_group_id' => $groupId,
+                'planned_assign_id' => $plannedAssignmentId
+            ]
+        );
+
+        return $this->orderData($data, [
+            '_index' => 'planned_assign_id',
+            'planned_assign_id' => 'id',
+            'start_date' => 'startDate',
+            'end_date' => 'endDate',
+            'assignment' => [
+                '_index' => 'assign_id',
+                '_single' => TRUE,
+                'assign_id' => 'id',
+                'title' => 'title',
+                'description' => 'description'
+            ],
+            'students' => [
+                '_index' => 'student_id',
+                'student_id' => 'id',
+                'email' => 'email',
+                'student_first_name' => 'firstName',
+                'student_last_name' => 'lastName',
+                'solution' => [
+                    '_index' => 'solution_id',
+                    '_single' => TRUE,
+                    'solution_id' => 'id',
+                    'solution_title' => 'title',
+                    'submitted_at' => 'submittedAt',
+                    'created_at' => 'createdAt',
+                    'updated_at' => 'updatedAt',
+                    'mark' => 'mark',
+                    'reviewed_at' => 'reviewedAt',
+                    'diagrams' => [
+                        '_index' => 'diagram_id',
+                        'diagram_id' => 'id',
+                        'diagram_name' => 'name',
+                        'image' => 'image',
+                    ],
+                    'reviewedBy' => [
+                        '_index' => 'teacher_id',
+                        '_single' => TRUE,
+                        'teacher_id' => 'id',
+                        'teacher_first_name' => 'firstName',
+                        'teacher_last_name' => 'lastName'
+                    ]
+                ],
+            ]
+        ]);
+    }
+
 }

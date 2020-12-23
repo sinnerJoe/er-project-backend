@@ -22,12 +22,12 @@ function verify_columns_exist($dict, $translations) {
     }
     $missing = [];
     foreach($translations as $key => $translation) {
-        if(!array_key_exists($key, $translations)) {
+        if(!array_key_exists($key, $dict)) {
             array_push($missing, $key.'('.$translation.')');
         }
     }
     if(count($missing)) {
-        throw new Exception(implode(', ', $missing));
+        throw new Exception("The following columns are missing from the select: ".implode(', ', $missing));
     }
 } 
 

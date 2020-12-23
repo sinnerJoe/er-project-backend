@@ -40,6 +40,13 @@ $router->handleDelete(function($http, $body) {
 $router->handleGet(function($http, $body) {
     $assignment = new Assignment();
     $sessionData = getSessionData();
+
+    if(isset($_GET['groupId'])) {
+        is_teacher($http, $body);
+        $data = $assignment->getPlannedAssignmentsForEvaluation($_GET['groupId'], $_GET['plannedAssignmentId']);
+        $http->ok($data);
+    }
+
     $data = $assignment->getAllStudentAssignments($sessionData->userId);
     $http->ok($data);
 })->addValidator(is_authenticated);

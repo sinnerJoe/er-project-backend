@@ -55,7 +55,8 @@ function saveDiagrams($diagrams, $solutionId) {
             'name' => $diagram['name'],
             'content' => $diagram['content'],
             'solution_id' => $solutionId,
-            'image_id' => $imageId
+            'image_id' => $imageId,
+            'type' => $diagram['type']
         ];
         $solution->createDiagram($diagramData);
     }
@@ -164,6 +165,17 @@ $router->handlePatch(function($http, $body) {
             $solution->unsubmit($_GET['id']);
 
             $http->ok();
+        } else if($_GET['target'] === 'mark') {
+            is_teacher();
+            $solutionId = $_GET['id'];
+            if(!$sessionData->isAdmin) {
+                $reviewerData = $solution->getSolutionReviewer($solutionId);
+                if(!$reviewerData || $reviewerData['user_id'] != $sessionData->userId) {
+                    $http->notAuthorized('You cannot grade groups that you\'re not responsible of');
+                }
+            }
+            $solution->putMark($solutionId, $sessionData->userId, $body['mark']);
+            $http->ok('Mark assigned successfully.');
         }
 })->addValidator(is_authenticated);
 
