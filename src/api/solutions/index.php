@@ -128,7 +128,7 @@ $router->handleGet(function($http, $body) {
     $http->ok($solutions);
 })->addValidator(is_authenticated);
 
-function checkCanStatusBeChanged($plannedAssignmentId) {
+function checkCanStatusBeChanged($plannedAssignmentId, $http) {
     $solution = new Solution();
     $sessionData = getSessionData();
     $solutionData = $solution->getSolutionById($_GET['id']);
@@ -155,13 +155,13 @@ $router->handlePatch(function($http, $body) {
 
         if($_GET['target'] === 'submit') {
             
-            checkCanStatusBeChanged($plannedAssignmentId);
+            checkCanStatusBeChanged($plannedAssignmentId, $http);
 
             $solution->unsubmitOthers($sessionData->userId, $plannedAssignmentId);
             $solution->submit($_GET['id'], $plannedAssignmentId);
             $http->ok();
         } else if($_GET['target'] === 'unsubmit') {
-            checkCanStatusBeChanged($plannedAssignmentId);
+            checkCanStatusBeChanged($plannedAssignmentId, $http);
             $solution->unsubmit($_GET['id']);
 
             $http->ok();
