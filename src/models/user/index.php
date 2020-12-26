@@ -1,16 +1,20 @@
 <?php
 
 require_once(__DIR__."/../Model.php");
+require_once(__DIR__."/hierarchy.php");
 
 class User extends Model {
     public function __construct()
     {
         parent::__construct(__DIR__);
     }
-    public function getAll() {
-        return $this->fetchAll("getAll.sql");
+
+    public function getAll($conditions=[], $args=[]) {
+        $args['year'] = $args['year'];
+        
+        return $this->fetchCustom('getAll.sql', $conditions, $args);
     }
-    
+
     public function getTeachers($year) {
         $data = $this->fetchAll("getTeachers.sql", ['year' => (int)$year]);
         return $this->orderData($data, [
@@ -69,23 +73,33 @@ class User extends Model {
     }
 
     public function fetchByRole($role) {
-        $data = $this->fetchCustom('getAll.sql', [equality('role_level')], ['role_level' => $role]);
+        $data = $this->getAll([equality('role_level')], ['role_level' => $role]);
 
-        return $this->orderData($data, [
-            '_index' => 'user_id',
-            'user_id' => 'id',
-            'first_name' => 'firstName',
-            'last_name' => 'lastName',
-            'email' => 'email',
-            'created_at' => 'createdAt',
-            'group' => [
-                '_index' => 'college_group_id',
-                '_single' => TRUE,
-                'college_group_id' => 'id',
-                'name' => 'name',
-                'ed_year' => 'year'
-            ]
+        return organizeUsers($data);
+    }
+
+    public function fetchByRegistrationYear($year) {
+        $data = $this->getAll([], ['year' => $year]);
+
+        return organizeUsers($data);
+    }
+
+    public function changeRole($userId, $role) {
+        return $this->update('user_account', [
+            'role_level' => ':role'
+        ], [
+            equality('user_id')
+        ], [
+            'user_id' => $userId,
+            'role' => $role
         ]);
+    }
+
+    public function deleteUser($userId) {
+        $cond = [equality('user_id')];
+        $args =  ['user_id' => $userId];
+        $this->delete('user_session', $cond, $args);
+        $this->delete('user_account', $cond, $args);
     }
 }
 

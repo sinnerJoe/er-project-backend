@@ -23,9 +23,21 @@ function organizeFullSolution($data) {
             'created_at' => 'createdAt',
             'updated_at' => 'updatedAt',
             'mark' => 'mark',
-            'reviewed_by' => 'reviewedBy',
             'reviewed_at' => 'reviewedAt',
             'title' => 'title',
+            'reviewer' => [
+                '_index' => 'reviewed_by',
+                '_single' => TRUE,
+                'reviewed_by' => 'id',
+                'first_name' => 'firstName',
+                'last_name' => 'lastName'
+            ],
+            'assignment' => [
+                '_index' => 'assign_id',
+                '_single' => TRUE,
+                'assign_id' => 'id',
+                'a_title' => 'title'
+            ],
             'diagrams' => [
                 '_index' => 'diagram_id',
                 'diagram_id' => 'id',

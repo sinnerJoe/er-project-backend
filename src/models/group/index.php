@@ -86,4 +86,12 @@ class Group extends Model {
             ['id' => $groupId, 'cid' => $coordinatorId]
         );
     }
+
+    public function removeCoordinator($teacherId) {
+        return $this->update('college_group', 
+            ['coordinator_id' => 'NULL'],
+            [equality('coordinator_id')],
+            ['coordinator_id' => $teacherId]
+        );
+    }
 }

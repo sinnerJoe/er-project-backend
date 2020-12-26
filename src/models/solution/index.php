@@ -42,6 +42,37 @@ class Solution extends Model {
         return $this->execute('deleteSolution.sql', ['solution_id' => $solutionId]);
     }
 
+    private function getUserDiagrams($userId) {
+       return $this->fetchCustom('getDiagrams.sql', [equality('user_id')], ['user_id' => $userId]);
+    }
+
+    public function deleteSolutionsOfUser($userId) {
+
+        $diagramData = $this->getUserDiagrams($userId);
+        $diagramData = $this->orderData($diagramData, [
+            '_index' => 'diagram_id',
+            'diagram_id' => 'id'
+        ]);
+
+        $ids = array_map(function($diagram){
+            return $diagram['id'];
+        }, $diagramData);
+
+        if(count($ids) > 0) {
+            $this->delete('diagram', [inOp('diagram_id', $ids)], $ids);
+        }
+
+        $this->delete('solution', [equality('user_id')], ['user_id' => $userId]);
+    }
+
+    public function removeReviewer($teacherId) {
+        return $this->update('solution', 
+            ['reviewed_by' => 'NULL'],
+            [equality('reviewed_by', ':id')],
+            ['id' => $teacherId]
+        );
+    }
+
     public function getSolutionsOfUser($userId) {
         $results = $this->fetchCustom('getFullSolutions.sql', 
         [equality('user_id')],

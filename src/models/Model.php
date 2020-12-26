@@ -84,12 +84,13 @@ class Model {
         return $this->db->execute($query, $arguments)->pdo;
     }
 
-    public function delete($table, $clauses, $arguments) {
+    public function generateDeleteQuery($table, $clauses) {
         $expression = new AndOp(...$clauses);
+        return "DELETE FROM ".$table." WHERE".$expression->build();
+    }
 
-        $query = "DELETE FROM ".$table." WHERE".$expression->build();
-
-        return $this->db->execute($query, $arguments);
+    public function delete($table, $clauses, $arguments) {
+        return $this->db->execute($this->generateDeleteQuery($table, $clauses), $arguments);
     }
 
     public function orderData($data, $config) {

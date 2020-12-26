@@ -239,6 +239,21 @@ function equalityOrNull($left, $right = NULL) {
     
 }
 
+function inOp($left, $arr, $prefix=NULL) {
+    $params = array_map(function($key) {
+        if(!$prefix) {
+            return '?';
+        }
+        else {
+            return ':'.$prefix.$key;
+        }
+    }, array_keys($arr));
+
+    $list = implode(', ', $params);
+
+    return $left.' IN ('.$list.')';
+}
+
 class QueryBuilder {
     private $query;
     private $filterExpression;

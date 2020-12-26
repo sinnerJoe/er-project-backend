@@ -21,6 +21,28 @@ class Image extends Model {
         return $this->execute('deleteImage.sql', ['image_id' => $imageId]);
     }
 
+    public function deleteMultipleImages($ids) {
+        if(count($ids) > 0) {
+            return $this->delete('images', [inOp('image_id', $ids)], $ids);
+        }
+    }
+
+    private function getImagesOfUser($userId) {
+        return $this->fetchAll('getImagesOfUser.sql', ['user_id' => $userId]);
+    }
+
+    public function deleteImagesOfUser($userId) {
+        $data = $this->getImagesOfUser($userId);
+        $ids = array_map(function($image) {
+            return $image['image_id'];
+        }, $data);
+        
+        $this->deleteMultipleImages($ids);
+        foreach($data as $image) {
+            $this->deleteImageFile($image['filepath']);
+        }
+    }
+
     public function deleteImageFile($filename) {
         $fullPath = $this->getFullPath($filename);
         if(file_exists($fullPath)) {

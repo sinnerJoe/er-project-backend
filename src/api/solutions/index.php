@@ -5,62 +5,11 @@ require_once(__DIR__."/../../models/solution/index.php");
 require_once(__DIR__."/../../models/image/index.php");
 require_once(__DIR__."/../../validators/auth.php");
 require_once(__DIR__."/../../http/Router.php");
+require_once(__DIR__."/services.php");
 
 $router = new Router();
 
 
-function removeDiagram($diagramId) {
-    $image = new Image();
-    $solution = new Solution();
-
-    $diagram = $solution->getDiagramById($diagramId);
-
-    if(!$diagram) {
-        return;
-    }
-
-    $image->deleteImage($diagram['image_id'], $diagram['filepath']);
-
-    $solution->deleteDiagram($diagramId);
-}
-
-function removeSolutionDiagrams($solutionId) {
-    $sessionData = getSessionData();
-    $solution = new Solution();
-    $solutionData = $solution->getSolutionById($solutionId);
-
-    $http = new HttpResponse();
-    if(!$solutionData) {
-        $http->notFound();
-    }
-
-    if($sessionData->userId !== $solutionData['userId'] && $sessionData->role !== 0) {
-        $http->notAuthorized();
-    }
-
-    foreach($solutionData['diagrams'] as $diagram) {
-        removeDiagram($diagram['id']);
-    }
-}
-
-function saveDiagrams($diagrams, $solutionId) {
-
-    $sessionData = getSessionData();
-    $solution = new Solution();
-    $image = new Image();
-
-    foreach($diagrams as $diagram) {
-        $imageId = $image->saveImage($diagram['image'], $sessionData->userId);
-        $diagramData = [
-            'name' => $diagram['name'],
-            'content' => $diagram['content'],
-            'solution_id' => $solutionId,
-            'image_id' => $imageId,
-            'type' => $diagram['type']
-        ];
-        $solution->createDiagram($diagramData);
-    }
-}
 
 $router->handlePost(function($http, $body) {
     $sessionData = getSessionData();
@@ -84,6 +33,8 @@ $router->handlePost(function($http, $body) {
 
 $router->handleDelete(function($http, $body) {
     $sessionData = getSessionData();
+    
+    checkCanEditSolution($body['id']);
     removeSolutionDiagrams($body['id']);
 
     $solution = new Solution();
@@ -99,6 +50,8 @@ $router->handleDelete(function($http, $body) {
 $router->handlePut(function($http, $body) {
     $sessionData = getSessionData();
     $solution = new Solution();
+
+    checkCanEditSolution($_GET['id']);
 
     removeSolutionDiagrams($_GET['id']);
 
@@ -128,25 +81,6 @@ $router->handleGet(function($http, $body) {
     $http->ok($solutions);
 })->addValidator(is_authenticated);
 
-function checkCanStatusBeChanged($plannedAssignmentId, $http) {
-    $solution = new Solution();
-    $sessionData = getSessionData();
-    $solutionData = $solution->getSolutionById($_GET['id']);
-    if(!$solutionData) {
-        $http->notFound('Solution not found');
-    }
-    if($solutionData['userId'] !== $sessionData->userId) {
-        $http->notAuthorized("You aren't the owner of the solution.");
-    }
-    if($solutionData['reviewedAt'] !== null) {
-        $http->notAuthorized("This solution was already reviewed, you cannot resubmit it");
-    }
-
-    $reviewdSolutions = $solution->fetchReviewedSolutions($sessionData->userId, $plannedAssignmentId);
-    if(count($reviewdSolutions) > 0) {
-        $http->notAuthorized("Your solution to this assignment was already reviewed. You cannot change it anymore.");
-    }
-}
 
 $router->handlePatch(function($http, $body) {
     $solution = new Solution();
