@@ -88,7 +88,7 @@ function checkCanEditSolution($solutionId) {
     if($data['userId'] !== $sessionData->userId && !$sessionData->isAdmin) {
         $http->notAuthorized('You can\'t edit nor delete solutions of other users');
     }
-    if($data['assignment']) {
-        $http->badRequest("Cannot edit nor delete submitted solutions. If the solution is not evaluated, you can unsubmit it before editing/deleting.");
+    if($data['reviewedAt']) {
+        $http->badRequest("Cannot edit nor delete evaluated solutions.");
     }
 }

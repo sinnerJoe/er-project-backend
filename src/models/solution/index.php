@@ -82,11 +82,19 @@ class Solution extends Model {
     }
 
     public function refreshUpdatedAt($solutionId) {
-        return $this->update(
+        $args = ['solution_id' => $solutionId];
+        $this->update(
             'solution', 
             ['updated_at' => 'NOW()'], 
             [equality('solution_id')], 
-            ['solution_id' => $solutionId]
+            $args
+        );
+
+        $this->update(
+            'solution',
+            ['submitted_at' => 'NOW()'],
+            [equality('solution_id'), isNotNull('submitted_at')],
+            $args
         );
     }
 

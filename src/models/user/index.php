@@ -101,6 +101,50 @@ class User extends Model {
         $this->delete('user_session', $cond, $args);
         $this->delete('user_account', $cond, $args);
     }
+
+    public function getPassword($userId) {
+        $data = $this->fetchOne('getPassword.sql', ['user_id' => $userId]);
+        if(!$data) {
+            return '';
+        }
+        return $data['password'];
+    }
+
+    public function changePassword($userId, $password) {
+        return $this->update('user_account', 
+            ['password' => ':password'], 
+            [equality('user_id')],
+            [
+                'user_id' => $userId,
+                'password' => $password
+            ]
+        );
+    }
+
+    public function changeName($userId, $firstName, $lastName) {
+        return $this->update('user_account',
+            [
+                'first_name' => ':firstName',
+                'last_name' => ':lastName'
+            ],
+            [equality('user_id')],
+            [
+                'user_id' => $userId,
+                'lastName' => $lastName,
+                'firstName' => $firstName
+            ]
+        );
+    }
+
+    public function getShallowUserById($userId) {
+        $data = $this->fetchCustom('getShallowUser.sql', [equality(user_id)], ['user_id' => $userId]);
+        return $this->orderData($data, [
+            '_index' => 'user_id',
+            'first_name' => 'firstName',
+            'last_name' => 'lastName',
+            'email' => 'email'
+        ])[0];
+    }
 }
 
 ?>

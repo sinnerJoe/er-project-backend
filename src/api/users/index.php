@@ -33,22 +33,42 @@ $router->handlePost(function ($http, $body) {
 $router->handleGet(function ($http, $body) {
     $user = new User();
     
+    $sessionData = getSessionData();
+    
     if($_GET['role'] === 'teacher') {
+        is_teacher($http, $body);
         $http->ok($user->getTeachers($_GET['year'])); 
     }
 
     if($_GET['role'] === 'student') {
+        is_teacher($http, $body);
         $http->ok($user->fetchByRole(10));
     }
-    $http->ok($user->fetchByRegistrationYear($_GET['year']));
-});
+
+    if(isset($_GET['year'])) {
+        is_admin($http, $body); 
+        $http->ok($user->fetchByRegistrationYear($_GET['year']));
+    }
+
+    $http->ok($user->getShallowUserById($sessionData->userId));
+})->addValidator(is_authenticated);
+
+function checkCorrectPassword($userId, $password, $http) {
+    $user = new User();
+    $dbPassword = $user->getPassword($userId);
+    if(!password_verify($password, $dbPassword)) {
+        $http->badRequest('Wrong old password.');
+    }
+}
 
 $router->handlePatch(function($http, $body) {
     $user = new User();
 
     $sessionData = getSessionData();
+    $userId = $sessionData->userId;
 
     if($_GET['target'] === 'group') {
+        is_teacher();
         $user->changeGroup($_GET['id'], $body['groupId']);
         $http->ok();
     }
@@ -59,7 +79,18 @@ $router->handlePatch(function($http, $body) {
         $user->changeRole($_GET['id'], $body['role']);
         $http->ok();
     }
-})->addValidator(is_authenticated)->addValidator(is_teacher);
+
+    if($_GET['target'] === 'password') {
+        checkCorrectPassword($userId, $body['oldPassword'], $http);
+        $user->changePassword($userId, password_hash($body['password'], PASSWORD_BCRYPT));
+        $http->ok("Password successfully changed");
+    }
+
+    if($_GET['target'] === 'name') {
+        $user->changeName($userId, $body['firstName'], $body['lastName']);
+        $http->ok("Your name was successfully changed.");
+    }
+})->addValidator(is_authenticated);
 
 $router->handleDelete(function($http, $body) {
     $sessionData = getSessionData();
@@ -69,6 +100,8 @@ $router->handleDelete(function($http, $body) {
             $http->notAuthorized("You need to be an admin to delete user accounts");
         } 
         $deletedUserId = $_GET['id'];
+    } else {
+        checkCorrectPassword($deletedUserId, $_GET['password'], $http);
     }
 
     $image = new Image();

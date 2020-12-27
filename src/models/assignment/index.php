@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__."/../Model.php");
+require_once(__DIR__."/../image/index.php");
 
 class Assignment extends Model {
     public function __construct() {
@@ -111,6 +112,12 @@ class Assignment extends Model {
                 'planned_assign_id' => $plannedAssignmentId
             ]
         );
+        
+        foreach($data as $key => $row) {
+            if($row['image']) {
+                $data[$key]['image'] = Image::getImageUrl($row['image']);
+            }
+        };
 
         return $this->orderData($data, [
             '_index' => 'planned_assign_id',
