@@ -102,6 +102,7 @@ $router->handleDelete(function($http, $body) {
         $deletedUserId = $_GET['id'];
     } else {
         checkCorrectPassword($deletedUserId, $body['password'], $http);
+        logoutSession();
     }
 
     $image = new Image();
