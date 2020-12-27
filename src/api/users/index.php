@@ -101,7 +101,7 @@ $router->handleDelete(function($http, $body) {
         } 
         $deletedUserId = $_GET['id'];
     } else {
-        checkCorrectPassword($deletedUserId, $_GET['password'], $http);
+        checkCorrectPassword($deletedUserId, $body['password'], $http);
     }
 
     $image = new Image();
@@ -116,7 +116,7 @@ $router->handleDelete(function($http, $body) {
     $user->deleteUser($deletedUserId);
 
     
-    $http->ok("User successfully delete.");
+    $http->ok("User successfully deleted.");
 
 })->addValidator(is_authenticated);
 
