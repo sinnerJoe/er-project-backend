@@ -1,6 +1,9 @@
 <?php
 require_once(__DIR__.'/../../models/group/index.php');
+require_once(__DIR__.'/../../models/user/index.php');
+require_once(__DIR__.'/../../models/solution/index.php');
 require_once(__DIR__.'/../../http/Router.php');
+
 $router = new Router();
 
 $router->handleGet(function($http, $body) {
@@ -26,8 +29,15 @@ $router->handlePost(function($http, $body) {
 
 $router->handleDelete(function($http, $body) {
     $group = new Group();
+    $user = new User();
+    $solution = new Solution();
 
-    $group->deleteGroup($_GET['id']);
+    $groupId = $_GET['id'];
+    $members = $user->getGroupMemberIds($groupId);
+    $solution->removeSubmissionOfUsers($members);
+    $user->removeMembersFromGroup($groupId);
+
+    $group->deleteGroup($groupId);
 
     $http->ok();
 })->addValidator(is_authenticated);

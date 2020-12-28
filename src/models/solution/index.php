@@ -189,4 +189,26 @@ class Solution extends Model {
         return (int)$this->fetchOne('getSolutionCount.sql', ['user_id' => $userId])['count'];
     }
 
+    private function removeSubmissions($cond, $args) {
+        return $this->update('solution', [
+                'mark' => 'NULL',
+                'reviewed_at' => 'NULL',
+                'reviewed_by' => 'NULL',
+                'submitted_at' => 'NULL',
+                'planned_assign_id' => 'NULL'
+            ],$cond, $args );
+    }
+
+    public function removeSubmissionOfUsers($userIds) {
+        return $this->removeSubmissions([
+                inOp('user_id', $userIds)
+        ], $userIds);
+    }
+
+    public function removeSubmissionsToAssignment($plannedAssignmentId) {
+       return $this->removeSubmissions([
+           equality('planned_assign_id', ':id')
+       ],['id' => $plannedAssignmentId]); 
+    }
+
 }

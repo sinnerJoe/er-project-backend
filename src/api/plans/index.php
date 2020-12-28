@@ -1,5 +1,7 @@
 <?php
 require_once(__DIR__.'/../../models/plan/index.php');
+require_once(__DIR__.'/../../models/group/index.php');
+require_once(__DIR__.'/../../models/solution/index.php');
 require_once(__DIR__.'/../../http/Router.php');
 $router = new Router();
 
@@ -23,17 +25,23 @@ $router->handleGet(function($http, $body) {
 
 $router->handleDelete(function($http, $body) {
     $plan = new Plan();
+    $group = new Group();
+    $solution = new Solution();
 
-    $planObj = $plan->fetchPlanById($_GET['id']);
+    $planId = $_GET['id'];
+
+    $planObj = $plan->fetchPlanById($planId);
     if(!isset($planObj)) {
         $http->notFound();
     }
 
     foreach($planObj['plannedAssignments'] as $plannedAssignment) {
+        $solution->removeSubmissionsToAssignment($plannedAssignment['id']);
         $plan->deletePlannedAssignment($plannedAssignment['id']);
     }
 
-    $plan->deletePlan($_GET['id']);
+    $group->clearPlan($planId);
+    $plan->deletePlan($planId);
 
     $http->ok();
 

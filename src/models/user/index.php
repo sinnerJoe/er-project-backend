@@ -145,6 +145,24 @@ class User extends Model {
             'email' => 'email'
         ])[0];
     }
+
+    public function getGroupMemberIds($groupId) {
+        $data = $this->fetchCustom('getShallowUser.sql', 
+            [equality('college_group_id', ':id')],
+            ['id' => $groupId]
+        );
+        return array_map(function(&$row) {
+            return $row['user_id'];
+        }, $data);
+    }
+
+    public function removeMembersFromGroup($groupId) {
+        $this->update('user_account', 
+            ['college_group_id' => 'NULL'],
+            [equality('college_group_id', ':id')], 
+            ['id' => $groupId]
+        );
+    }
 }
 
 ?>

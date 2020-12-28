@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__.'/../../../models/plan/index.php');
+require_once(__DIR__.'/../../../models/solution/index.php');
 require_once(__DIR__.'/../../../models/assignment/index.php');
 require_once(__DIR__.'/../../../http/Router.php');
 $router = new Router();
@@ -28,8 +29,10 @@ $router->handlePut(function($http, $body) {
 
 $router->handleDelete(function($http, $body) {
     $plan = new Plan();
+    $solution = new Solution();
 
     foreach($_GET['ids'] as $id) {
+        $solution->removeSubmissionsToAssignment($id);
         $plan->deletePlannedAssignment($id);
     }
 

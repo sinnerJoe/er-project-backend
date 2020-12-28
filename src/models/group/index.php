@@ -94,4 +94,12 @@ class Group extends Model {
             ['coordinator_id' => $teacherId]
         );
     }
+
+    public function clearPlan($planId) {
+        return $this->update('college_group',
+            ['plan_id' => 'NULL'],
+            [equality('plan_id')],
+            ['plan_id' => $planId]
+        );
+    }
 }
