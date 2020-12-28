@@ -6,7 +6,7 @@ class HttpResponse {
         http_response_code(400);
         echo json_encode(array(
             // "date" => date("d/m/Y H:i:s"),
-            "error_type" => "invalid_parameter",
+            "status" => "invalid_parameter",
             "message" => $message
         ));
         exit();
@@ -15,7 +15,7 @@ class HttpResponse {
     public function serverFault($message) {
         http_response_code(500);
         echo json_encode(array(
-            "error_type" => "internal_server_error",
+            "status" => "internal_server_error",
             "message" => $message
         ));
         exit();
