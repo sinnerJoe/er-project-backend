@@ -93,7 +93,7 @@ class Solution extends Model {
         $this->update(
             'solution',
             ['submitted_at' => 'NOW()'],
-            [equality('solution_id'), isNotNull('submitted_at')],
+            [equality('solution_id'), isNotNull('submitted_at   ')],
             $args
         );
     }
@@ -183,6 +183,10 @@ class Solution extends Model {
         ],
         $params
         );
+    }
+
+    public function getSolutionCount($userId) {
+        return (int)$this->fetchOne('getSolutionCount.sql', ['user_id' => $userId])['count'];
     }
 
 }

@@ -57,8 +57,9 @@ function saveDiagrams($diagrams, $solutionId) {
     }
 }
 
-function checkCanStatusBeChanged($plannedAssignmentId, $http) {
+function checkCanStatusBeChanged($plannedAssignmentId) {
     $solution = new Solution();
+    $http = new HttpResponse();
     $sessionData = getSessionData();
     $solutionData = $solution->getSolutionById($_GET['id']);
     if(!$solutionData) {
@@ -90,5 +91,15 @@ function checkCanEditSolution($solutionId) {
     }
     if($data['reviewedAt']) {
         $http->badRequest("Cannot edit nor delete evaluated solutions.");
+    }
+}
+
+function checkDiagramsCount($diagrams) {
+    $http = new HttpResponse();
+    if(count($diagrams) == 0) {
+        $http->badRequest("You cannot have solutions without any diagrams");
+    }
+    if(count($diagrams) > 10) {
+        $http->badRequest("A solution cannot have more than 10 diagrams(tabs) associated with it");
     }
 }

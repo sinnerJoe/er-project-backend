@@ -18,14 +18,15 @@ $router->handlePost(function($http, $body) {
         "user_id" => $sessionData->userId,
         "title" => $body['title']
     ];
+    $diagrams = $body['diagrams']; 
 
     $solution = new Solution();
-    $image = new Image();
-
+    if($solution->getSolutionCount($sessionData->userId) >= 100) {
+        $http->badRequest('You already have the maximum allowed 100 saved solutions on you account. Please delete one to make space for the latest one.');
+    }
+    checkDiagramsCount($diagrams);
     $solutionId = $solution->createSolution($solutionData);
-
-    saveDiagrams($body['diagrams'], $solutionId);
-
+    saveDiagrams($diagrams, $solutionId);
     $http->ok(null, "Solution created successfully");
 })->addValidator(is_authenticated);
 
@@ -53,9 +54,12 @@ $router->handlePut(function($http, $body) {
 
     checkCanEditSolution($_GET['id']);
 
+    $diagrams = $body['diagrams'];
+    checkDiagramsCount($diagrams);
     removeSolutionDiagrams($_GET['id']);
 
-    saveDiagrams($body['diagrams'], $_GET['id']);
+
+    saveDiagrams($diagrams, $_GET['id']);
 
     $solution->refreshUpdatedAt($_GET['id']);
     $http->ok(null, "Solution successfully modified.");
