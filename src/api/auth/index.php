@@ -11,11 +11,11 @@ $router->handlePost(function ($http, $body) {
     $userData = $user->findUserByEmail($body['email']);
 
     if(!$userData || !password_verify($body['password'], $userData["password"])) {
-        $http->notAuthenticated("Either the user account doesn't exist or the password is wrong.");
+        $http->ok(false, "Either the user account doesn't exist or the password is wrong.");
     }
     registerSession($userData['user_id']);
     loginSession();
-    $http->ok(null, "Authentication succeeded. ".session_id());
+    $http->ok(true, "Authentication succeeded. ");
 });
 
 $router->handleGet(function ($http, $body) {
