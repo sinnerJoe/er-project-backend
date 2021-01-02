@@ -39,7 +39,19 @@ class Assignment extends Model {
             'assign_id' => 'id',
             'title' => 'title',
             'description' => 'description',
-            'updated_at' => 'updatedAt'
+            'updated_at' => 'updatedAt',
+            'plannedAssignments' => [
+                '_index' => 'planned_assign_id',
+                'planned_assign_id' => 'id',
+                'start_date' => 'startDate',
+                'end_date' => 'endDate',
+                'plan' => [
+                    '_index' => 'plan_id',
+                    '_single' => TRUE,
+                    'plan_id' => 'id',
+                    'name' => 'name'
+                ]
+            ]
         ]);
     }
 

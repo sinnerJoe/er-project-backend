@@ -200,9 +200,11 @@ class Solution extends Model {
     }
 
     public function removeSubmissionOfUsers($userIds) {
-        return $this->removeSubmissions([
+        if(count($userIds) > 0) {
+            return $this->removeSubmissions([
                 inOp('user_id', $userIds)
-        ], $userIds);
+            ], $userIds);
+        }
     }
 
     public function removeSubmissionsToAssignment($plannedAssignmentId) {

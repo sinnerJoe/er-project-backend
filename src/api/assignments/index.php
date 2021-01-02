@@ -36,8 +36,20 @@ $router->handlePut(function ($http, $body) {
 $router->handleDelete(function ($http, $body) {
     $assignment = new Assignment();
 
-    $assignment->deleteAssignment($_GET['id']);
+    $id = $_GET['id'];
+    
+    $assignmentData = $assignment->getAssignment($id);
 
-    $http->ok();
+    if(!$assignmentData) {
+        $http->notFound("The assignment you're trying to delete doesn't exist");
+    }
+    $educationalPlansCount = count($assignmentData['plannedAssignments']);
+    if($educationalPlansCount > 0) {
+        $http->badRequest("The assignment is scheduled in ".$educationalPlansCount." educational plan(s). Please remove it from the schedule before attempting to delete.");
+    }
+
+    $assignment->deleteAssignment($id);
+
+    $http->ok("The assignment was deleted successfully.");
 })->addValidator(is_authenticated)->addValidator(is_teacher);
 
