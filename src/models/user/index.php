@@ -72,8 +72,12 @@ class User extends Model {
         ]);
     }
 
-    public function fetchByRole($role) {
-        $data = $this->getAll([equality('role_level')], ['role_level' => $role]);
+    public function fetchByRole($role, $fromYear = NULL) {
+        $data = $this->getAll([
+            equality('role_level')
+        ], 
+            ['role_level' => $role, 'year' => $fromYear]
+        );
 
         return organizeUsers($data);
     }

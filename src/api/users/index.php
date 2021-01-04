@@ -42,7 +42,7 @@ $router->handleGet(function ($http, $body) {
 
     if($_GET['role'] === 'student') {
         is_teacher($http, $body);
-        $http->ok($user->fetchByRole(10));
+        $http->ok($user->fetchByRole(10, $_GET['fromYear']));
     }
 
     if(isset($_GET['year'])) {
