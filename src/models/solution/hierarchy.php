@@ -14,7 +14,21 @@ function addImageToSolutions(&$solutions) {
     }
 }
 
-function organizeFullSolution($data) {
+function organizeFullSolution($data, $excludeContent = FALSE) {
+    $diagramSchema = [
+                '_index' => 'diagram_id',
+                'diagram_id' => 'id',
+                'name' => 'name',
+                'type' => 'type',
+                'content' => 'content',
+                'filepath' => 'image'
+    ];
+
+    if($excludeContent) {
+        unset($diagramSchema['content']);
+    }
+
+
     $obj = new DataHierarchy([              
             '_index' => 'solution_id',
             'solution_id' => 'id',
@@ -38,14 +52,7 @@ function organizeFullSolution($data) {
                 'assign_id' => 'id',
                 'a_title' => 'title'
             ],
-            'diagrams' => [
-                '_index' => 'diagram_id',
-                'diagram_id' => 'id',
-                'name' => 'name',
-                'type' => 'type',
-                'content' => 'content',
-                'filepath' => 'image'
-            ],
+            'diagrams' => $diagramSchema,
         ]);
     
     $solutions = $obj->orderData($data);

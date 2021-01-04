@@ -78,7 +78,7 @@ class Solution extends Model {
         [equality('user_id')],
         ['user_id' => $userId]);
 
-        return organizeFullSolution($results);
+        return organizeFullSolution($results, TRUE);
     }
 
     public function refreshUpdatedAt($solutionId) {
@@ -93,7 +93,7 @@ class Solution extends Model {
         $this->update(
             'solution',
             ['submitted_at' => 'NOW()'],
-            [equality('solution_id'), isNotNull('submitted_at   ')],
+            [equality('solution_id'), isNotNull('submitted_at')],
             $args
         );
     }
