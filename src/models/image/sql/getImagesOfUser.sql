@@ -1,5 +1,5 @@
 SELECT image_id, filepath
-FROM user_account u 
+FROM active_user u 
 JOIN solution USING(user_id)
 JOIN diagram USING(solution_id)
 JOIN images i USING(image_id)

@@ -22,7 +22,9 @@ END;
 -- HELPER FUNCTIONS END
 
 -- CLEANUP
-DROP TABLE IF EXISTS images, 
+DROP TABLE IF EXISTS images,
+					restore_request,
+					account_confirmation,
                     solution, 
                     planned_assign, 
                     plan, 
@@ -117,4 +119,14 @@ CREATE TABLE restore_request (
 	restore_request_id char(36) PRIMARY KEY,
 	user_id INT NOT NULL REFERENCES user_account(user_id),
 	expires DATETIME NOT NULL
-)''
+);
+
+CREATE TABLE account_confirmation (
+	account_confirmation_id char(36) PRIMARY KEY,
+	user_id INT NOT NULL REFERENCES user_account(user_id)
+);
+
+
+CREATE VIEW active_user AS (
+	SELECT * FROM user_account ua WHERE disabled = false 
+)

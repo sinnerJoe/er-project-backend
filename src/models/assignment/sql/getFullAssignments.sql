@@ -23,11 +23,11 @@ SELECT
 
 
     
-FROM user_account u
+FROM active_user u
 JOIN college_group g USING(college_group_id)
 JOIN planned_assign p ON p.plan_id = g.plan_id
 JOIN assign a USING(assign_id)
 LEFT JOIN solution s USING(planned_assign_id, user_id)
-LEFT JOIN user_account t ON reviewed_by = t.user_id
+LEFT JOIN active_user t ON reviewed_by = t.user_id
 WHERE date_gte(NOW(), start_date) OR s.solution_id IS NOT NULL
 ORDER BY planned_assign_id

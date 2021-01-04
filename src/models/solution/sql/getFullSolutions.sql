@@ -25,5 +25,5 @@ JOIN diagram d USING(solution_id)
 JOIN images i USING(image_id)
 LEFT JOIN planned_assign p USING(planned_assign_id)
 LEFT JOIN assign a USING(assign_id)
-LEFT JOIN user_account t ON t.user_id = s.reviewed_by
+LEFT JOIN active_user t ON t.user_id = s.reviewed_by
 ORDER BY solution_id, diagram_id

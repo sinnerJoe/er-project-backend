@@ -10,6 +10,7 @@ function organizeUsers($data) {
             'email' => 'email',
             'role_level' => 'role',
             'created_at' => 'createdAt',
+            'disabled' => 'disabled',
             'evaluatedSolutions' => [
                 '_index' => 'solution_id',
                 'mark' => 'mark',

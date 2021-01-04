@@ -1,3 +1,3 @@
 SELECT *
-FROM user_account
+FROM user_account 
 WHERE email=:email

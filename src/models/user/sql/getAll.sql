@@ -5,6 +5,7 @@ SELECT
     u.role_level,
     email,
     u.created_at,
+    u.disabled,
 
     g.college_group_id,
     g.name,

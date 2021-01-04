@@ -4,29 +4,55 @@ require_once(__DIR__.'/../../http/Router.php');
 require_once(__DIR__.'/../../models/user/index.php');
 require_once(__DIR__.'/../../models/image/index.php');
 require_once(__DIR__.'/../../models/solution/index.php');
+require_once(__DIR__.'/../../models/account-confirmation/index.php');
 require_once(__DIR__.'/../../models/group/index.php');
 
 $router = new Router(false);
 
+function generateConfirmationLink($id) {
+    return Mail::$DOMAIN.'/confirm?id='.$id;
+}
+
+function sendConfirmationEmail($id, $email, $fullName) {
+    return Mail::sendMail($email, 
+        'Confirm your account on ER Platform',
+        'Hello '.$fullName.', </br>'.
+        'Please follow <a href="'.generateConfirmationLink($id).'">'.
+        "this link </a> in order to activate the account registered on the <b>ER Platform</b>.".
+        "</br>Please ignore this email if you didn't register on the website."
+    );
+}
 
 $router->handlePost(function ($http, $body) {
-    // echo $_POST;
     $user = new User();
-    // var_dump ((array)$body);
-    // exit();
+    $confirmation = new AccountConfirmation();
+
+    $email = $body['email'];
+    $firstName = $body['first_name'];
+    $lastName = $body['last_name'];
     
+    if($user->findUserByEmail($email)) {
+        $http->badRequest("A user with the same email is already registered.");
+    }
+
+    
+
     $data = array( 
         'password' => password_hash($body['password'], PASSWORD_BCRYPT),
-        'email' => $body['email'],
-        'last_name' => $body['last_name'],
-        'first_name' => $body['first_name'],
+        'email' => $email,
+        'last_name' => $lastName,
+        'first_name' => $firstName,
         'college_group_id' => $body['college_group']
-  ); 
-    try {
-        $user->register($data);
-    } catch(Exception $e) {
-        $http->badRequest("The user is already registered.".$e->getMessage());
-    }
+    ); 
+
+
+    $userId = $user->register($data);
+
+    $confirmation->createFor($userId);
+    $id = $confirmation->fetchRequestByUserId($userId)['account_confirmation_id'];
+
+    sendConfirmationEmail($id, $email, $firstName.' '.$lastName);
+
     $http->ok(null, "You registerd successfully.");
 });
 

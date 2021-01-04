@@ -13,6 +13,11 @@ $router->handlePost(function ($http, $body) {
     if(!$userData || !password_verify($body['password'], $userData["password"])) {
         $http->ok(false, "Either the user account doesn't exist or the password is wrong.");
     }
+
+    if((int)$userData['disabled']) {
+        $http->ok(false, "The account isn't active. The email address wasn't confirmed. You should check your spam inbox on you email address.");
+    }
+
     registerSession($userData['user_id']);
     loginSession();
     $http->ok(true, "Authentication succeeded. ");

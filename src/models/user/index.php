@@ -74,7 +74,8 @@ class User extends Model {
 
     public function fetchByRole($role, $fromYear = NULL) {
         $data = $this->getAll([
-            equality('role_level')
+            equality('role_level'),
+            equality('disabled', 'FALSE')
         ], 
             ['role_level' => $role, 'year' => $fromYear]
         );
@@ -171,6 +172,14 @@ class User extends Model {
             ['college_group_id' => 'NULL'],
             [equality('college_group_id', ':id')], 
             ['id' => $groupId]
+        );
+    }
+
+    public function activateAccount($userId) {
+        $this->update('user_account',
+            ['disabled' => 'FALSE'],
+            [equality('user_id')],
+            ['user_id' => $userId]
         );
     }
 }

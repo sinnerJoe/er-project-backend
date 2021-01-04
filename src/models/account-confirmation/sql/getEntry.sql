@@ -1,0 +1,2 @@
+SELECT account_confirmation_id, user_id
+FROM account_confirmation

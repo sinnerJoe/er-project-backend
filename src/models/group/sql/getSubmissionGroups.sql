@@ -3,7 +3,7 @@ SELECT
     g.name, 
     ed_year,
     (SELECT COUNT(*) 
-     FROM user_account a 
+     FROM active_user a 
      JOIN solution USING(user_id)
      JOIN planned_assign p USING(planned_assign_id)
      WHERE g.plan_id = p.plan_id 

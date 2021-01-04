@@ -14,7 +14,7 @@ SELECT
     p.plan_id,
     p.name as plan_name
 FROM college_group g
-LEFT JOIN user_account s USING(college_group_id)
-LEFT JOIN user_account c ON c.user_id = coordinator_id
+LEFT JOIN active_user s USING(college_group_id)
+LEFT JOIN active_user c ON c.user_id = coordinator_id
 LEFT JOIN plan p USING (plan_id)
 ORDER BY college_group_id, coordinator_id, s.user_id
