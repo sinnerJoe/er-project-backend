@@ -69,12 +69,16 @@ function checkCanStatusBeChanged($plannedAssignmentId) {
         $http->notAuthorized("You aren't the owner of the solution.");
     }
     if($solutionData['reviewedAt'] !== null) {
-        $http->notAuthorized("This solution was already reviewed, you cannot resubmit it");
+        $http->badRequest("This solution was already reviewed, you cannot resubmit it");
     }
 
+    if(!$plannedAssignmentId) {
+        return;
+    }
+    
     $reviewdSolutions = $solution->fetchReviewedSolutions($sessionData->userId, $plannedAssignmentId);
     if(count($reviewdSolutions) > 0) {
-        $http->notAuthorized("Your solution to this assignment was already reviewed. You cannot change it anymore.");
+        $http->badRequest("Your solution to this assignment was already reviewed. You cannot change it anymore.");
     }
 }
 

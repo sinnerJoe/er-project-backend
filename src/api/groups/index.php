@@ -10,11 +10,15 @@ $router->handleGet(function($http, $body) {
     $group = new Group();
     if($_GET['type'] === 'shallow') {
        $http->ok($group->getShallowGroups($_GET['year'])); 
-    } else if($_GET['type'] === 'submissions') {
-       $http->ok($group->getSubmissionGroups($_GET['year']));
-    }
+    } 
+    
     is_authenticated($http, $body);
-    $http->ok($group->getGroups($_GET['year']));
+    is_teacher($http, $body);
+    if($_GET['type'] === 'submissions') {
+       $http->ok($group->getSubmissionGroups($_GET['year']));
+    } else {
+        $http->ok($group->getGroups($_GET['year']));
+    }
     
 });
 

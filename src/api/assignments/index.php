@@ -23,7 +23,7 @@ $router->handleGet(function ($http) {
     }
     
     $http->ok($data);
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated)->addValidator(is_teacher);
 
 $router->handlePut(function ($http, $body) {
     $assignment = new Assignment();

@@ -142,7 +142,13 @@ class User extends Model {
             '_index' => 'user_id',
             'first_name' => 'firstName',
             'last_name' => 'lastName',
-            'email' => 'email'
+            'email' => 'email',
+            'group' => [
+                '_index' => 'college_group_id',
+                '_single' => TRUE,
+                'college_group_id' => 'id',
+                'name' => 'name'
+            ]
         ])[0];
     }
 

@@ -112,3 +112,9 @@ CREATE TABLE IF NOT EXISTS diagram (
 );
 
 ALTER TABLE diagram ADD COLUMN `type` varchar(8) NOT NULL DEFAULT('er');
+
+CREATE TABLE restore_request (
+	restore_request_id char(36) PRIMARY KEY,
+	user_id INT NOT NULL REFERENCES user_account(user_id),
+	expires DATETIME NOT NULL
+)''

@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__.'/config.php');
+require_once(__DIR__.'/mail.php');
 
 class Database {
     static private $instance;

@@ -93,13 +93,13 @@ $router->handlePatch(function($http, $body) {
 
         if($_GET['target'] === 'submit') {
             
-            checkCanStatusBeChanged($plannedAssignmentId, $http);
+            checkCanStatusBeChanged($plannedAssignmentId);
 
             $solution->unsubmitOthers($sessionData->userId, $plannedAssignmentId);
             $solution->submit($_GET['id'], $plannedAssignmentId);
             $http->ok();
         } else if($_GET['target'] === 'unsubmit') {
-            checkCanStatusBeChanged($plannedAssignmentId, $http);
+            checkCanStatusBeChanged($plannedAssignmentId);
             $solution->unsubmit($_GET['id']);
 
             $http->ok();
