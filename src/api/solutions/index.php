@@ -99,10 +99,19 @@ $router->handlePatch(function($http, $body) {
             $solution->submit($_GET['id'], $plannedAssignmentId);
             $http->ok();
         } else if($_GET['target'] === 'unsubmit') {
-            checkCanStatusBeChanged($plannedAssignmentId);
+            checkCanStatusBeChanged($plannedAssignmentId, $sessionData->userId);
             $solution->unsubmit($_GET['id']);
 
             $http->ok();
+        } else if($_GET['target'] === 'title') {
+            checkSolutionOwner($_GET['id'], $sessionData->userId);
+            $title = $body['title'];
+            if(!isset($title) || is_null($title) || strlen(trim($title)) === 0) {
+                $http->badRequest('Wrong value for title.');
+            }
+            $solution->changeTitle($_GET['id'], trim($title));
+            $http->ok(NULL, 'Solution renamed successfully.');
+
         } else if($_GET['target'] === 'mark') {
             is_teacher();
             $solutionId = $_GET['id'];
@@ -113,7 +122,7 @@ $router->handlePatch(function($http, $body) {
                 }
             }
             $solution->putMark($solutionId, $sessionData->userId, $body['mark']);
-            $http->ok('Mark assigned successfully.');
+            $http->ok(NULL, 'Mark assigned successfully.');
         }
 })->addValidator(is_authenticated);
 

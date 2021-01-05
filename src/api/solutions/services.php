@@ -57,17 +57,29 @@ function saveDiagrams($diagrams, $solutionId) {
     }
 }
 
+function checkSolutionOwner($solutionId, $userId) {
+    $solution = new Solution();
+    $http = new HttpResponse();
+    
+    $solutionData = $solution->getSolutionById($solutionId);
+
+    if(!$solutionData) {
+        $http->notFound('Solution not found');
+    }
+    
+    if($solutionData['userId'] != $userId) {
+        $http->notAuthorized("You aren't the owner of the solution. ");
+    }
+
+    return $solutionData;
+}
+
 function checkCanStatusBeChanged($plannedAssignmentId) {
     $solution = new Solution();
     $http = new HttpResponse();
     $sessionData = getSessionData();
-    $solutionData = $solution->getSolutionById($_GET['id']);
-    if(!$solutionData) {
-        $http->notFound('Solution not found');
-    }
-    if($solutionData['userId'] !== $sessionData->userId) {
-        $http->notAuthorized("You aren't the owner of the solution.");
-    }
+    $solutionData = checkSolutionOwner($_GET['id'], $sessionData->userId);
+
     if($solutionData['reviewedAt'] !== null) {
         $http->badRequest("This solution was already reviewed, you cannot resubmit it");
     }
@@ -90,7 +102,7 @@ function checkCanEditSolution($solutionId) {
     if(!$data) {
         $http->notFound('Solution doesn\'t exist');
     }
-    if($data['userId'] !== $sessionData->userId && !$sessionData->isAdmin) {
+    if($data['userId'] != $sessionData->userId && !$sessionData->isAdmin) {
         $http->notAuthorized('You can\'t edit nor delete solutions of other users');
     }
     if($data['reviewedAt']) {

@@ -13,6 +13,7 @@ function organizeUsers($data) {
             'disabled' => 'disabled',
             'evaluatedSolutions' => [
                 '_index' => 'solution_id',
+                'solution_id' => 'id',
                 'mark' => 'mark',
                 'reviewed_at' => 'reviewedAt',
                 'assignment' => [

@@ -145,6 +145,22 @@ class Solution extends Model {
         );
     }
 
+    public function changeTitle($solutionId, $title) {
+        return $this->update(
+            'solution',
+            [
+                'title' => ':title'
+            ],
+            [
+                equality('solution_id')
+            ],
+            [
+                'solution_id' => $solutionId,
+                'title' => $title
+            ]
+            );
+    }
+
     public function fetchReviewedSolutions($userId, $plannedAssignmentId = NULL) {
         $results = $this->fetchCustom('getFullSolutions.sql', 
         [
