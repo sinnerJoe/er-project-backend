@@ -73,6 +73,24 @@ class Group extends Model {
         );
     }
 
+    public function createFullGroup($year, $name, $planId, $coordinatorId) {
+        $this->create('college_group', 
+            [
+                'ed_year' => ':year', 
+                'name' => ':name',
+                'coordinator_id' => ':teacher',
+                'plan_id' => ':plan'
+            ], 
+            [
+                'year' => $year, 
+                'name' => $name,
+                'teacher' => $coordinatorId,
+                'plan' => $planId
+            ]
+        );
+
+    }
+
     public function deleteGroup($id) {
         $this->delete('college_group', [equality('college_group_id', ':id')], ['id' => $id]);
     }

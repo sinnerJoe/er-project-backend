@@ -28,9 +28,26 @@ $router->handleGet(function($http, $body) {
 $router->handlePost(function($http, $body) {
     $group = new Group();
 
-    $group->createGroup($body['year'], $body['name']);
+    if(isset($_GET['copyTo'])) {
+        $year = (int) $_GET['copyTo'];
+        $groups = $group->getGroups($year - 1);
+        if(count($groups) === 0) {
+            $http->notFound("There are no groups created for ".($year - 1));
+        }
+        foreach($groups as $groupObj) {
+            $group->createFullGroup(
+                $year,
+                $groupObj['name'], 
+                $groupObj['plan']['id'], 
+                $groupObj['coordinator']['id']
+            );
+        }
+        $http->ok(NULL, count($groups)." groups were copied from ".($year - 1));
+    } else {
+        $group->createGroup($body['year'], $body['name']);
+        $http->ok(NULL, "Group ".$body['name']." created successfully");
+    }
 
-    $http->ok();
 
 })->addValidator(is_authenticated_strict)->addValidator(is_teacher);
 
@@ -46,16 +63,16 @@ $router->handleDelete(function($http, $body) {
 
     $group->deleteGroup($groupId);
 
-    $http->ok();
+    $http->ok(NULL, "The group was successfully deleted.");
 })->addValidator(is_authenticated_strict);
 
 $router->handlePatch(function($http, $body) {
     $group = new Group();
     if($_GET['target'] === 'coordinator') {
         $group->changeCoordinator($_GET['id'], $body['coordinatorId']);
-        $http->ok();
+        $http->ok(NULL, "The coordinator was successfully set");
     } else if($_GET['target'] === 'plan') {
         $group->changePlan($_GET['id'], $body['planId']);
-        $http->ok(); 
+        $http->ok(NULL, "The educational plan for the group was changed successfully."); 
     }
 })->addValidator(is_authenticated_strict)->addValidator(is_teacher); // change to admin
