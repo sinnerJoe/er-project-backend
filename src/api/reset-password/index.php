@@ -67,6 +67,6 @@ $router->handlePut(function($http, $body) {
 
     $resetPass->deleteUserRequests($data['user_id']);
 
-    $http->ok("Password changed successfully. Try to authenticate.");
+    $http->ok(null, "Password changed successfully. Try to authenticate.");
     
 });

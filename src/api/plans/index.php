@@ -9,7 +9,7 @@ $router->handlePost(function($http, $body) {
    $plan = new Plan();
    $id = $plan->createPlan($body['name']);
    $http->ok(["id" => $id]);
-})->addValidator(is_authenticated)->addValidator(is_teacher);
+})->addValidator(is_authenticated_strict)->addValidator(is_teacher);
 
 $router->handleGet(function($http, $body) {
     $plan = new Plan();
@@ -45,7 +45,7 @@ $router->handleDelete(function($http, $body) {
 
     $http->ok();
 
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 $router->handlePatch(function($http, $body) {
     $plan = new Plan();
@@ -53,4 +53,4 @@ $router->handlePatch(function($http, $body) {
     $plan->updatePlanName($_GET['id'], $body['name']);
 
     $http->ok();
-})->addValidator(is_authenticated)->addValidator(is_teacher);
+})->addValidator(is_authenticated_strict)->addValidator(is_teacher);

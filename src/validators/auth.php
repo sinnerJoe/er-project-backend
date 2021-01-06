@@ -2,9 +2,9 @@
 
 require_once(__DIR__.'/../api/auth/session.php');
 
-function is_authenticated($http, $request_body) {
+function is_authenticated($http, $request_body, $strict=FALSE) {
    $data = getSessionData();
-   if(!$data->authenticated) {
+   if(!$data->authenticated || $data->stale || $strict) {
       loginSession();
    } else {
       return;
@@ -13,6 +13,10 @@ function is_authenticated($http, $request_body) {
    if(!$data->authenticated) {
       $http->notAuthenticated();
    }
+}
+
+function is_authenticated_strict($http, $request_body) {
+   is_authenticated($http, $request_body, TRUE);
 }
 
 function is_teacher($http, $request_body) {

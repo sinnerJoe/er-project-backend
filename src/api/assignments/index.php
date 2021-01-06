@@ -11,7 +11,7 @@ $router->handlePost(function ($http, $body) {
     $assignment->createAssignment($body['title'], $body['description']);
 
     $http->ok();
-})->addValidator(is_authenticated)->addValidator(is_teacher);
+})->addValidator(is_authenticated_strict)->addValidator(is_teacher);
 
 $router->handleGet(function ($http) {
     $assignment = new Assignment();
@@ -31,7 +31,7 @@ $router->handlePut(function ($http, $body) {
     $assignment->updateAssignment($_GET['id'], $body['title'], $body['description']);
 
     $http->ok();
-})->addValidator(is_authenticated)->addValidator(is_teacher);
+})->addValidator(is_authenticated_strict)->addValidator(is_teacher);
 
 $router->handleDelete(function ($http, $body) {
     $assignment = new Assignment();
@@ -51,5 +51,5 @@ $router->handleDelete(function ($http, $body) {
     $assignment->deleteAssignment($id);
 
     $http->ok("The assignment was deleted successfully.");
-})->addValidator(is_authenticated)->addValidator(is_teacher);
+})->addValidator(is_authenticated_strict)->addValidator(is_teacher);
 

@@ -8,6 +8,7 @@ $router = new Router();
 
 $router->handleGet(function($http, $body) {
     $group = new Group();
+    $sessionData = getSessionData();
     if($_GET['type'] === 'shallow') {
        $http->ok($group->getShallowGroups($_GET['year'])); 
     } 
@@ -15,7 +16,9 @@ $router->handleGet(function($http, $body) {
     is_authenticated($http, $body);
     is_teacher($http, $body);
     if($_GET['type'] === 'submissions') {
-       $http->ok($group->getSubmissionGroups($_GET['year']));
+       $http->ok(
+           $group->getSubmissionGroups($_GET['year'], $sessionData->isAdmin ? NULL : $sessionData->userId)
+       );
     } else {
         $http->ok($group->getGroups($_GET['year']));
     }
@@ -29,7 +32,7 @@ $router->handlePost(function($http, $body) {
 
     $http->ok();
 
-})->addValidator(is_authenticated)->addValidator(is_teacher);
+})->addValidator(is_authenticated_strict)->addValidator(is_teacher);
 
 $router->handleDelete(function($http, $body) {
     $group = new Group();
@@ -44,7 +47,7 @@ $router->handleDelete(function($http, $body) {
     $group->deleteGroup($groupId);
 
     $http->ok();
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 $router->handlePatch(function($http, $body) {
     $group = new Group();
@@ -55,4 +58,4 @@ $router->handlePatch(function($http, $body) {
         $group->changePlan($_GET['id'], $body['planId']);
         $http->ok(); 
     }
-})->addValidator(is_authenticated)->addValidator(is_teacher); // change to admin
+})->addValidator(is_authenticated_strict)->addValidator(is_teacher); // change to admin

@@ -116,7 +116,7 @@ $router->handlePatch(function($http, $body) {
         $user->changeName($userId, $body['firstName'], $body['lastName']);
         $http->ok("Your name was successfully changed.");
     }
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 $router->handleDelete(function($http, $body) {
     $sessionData = getSessionData();
@@ -145,7 +145,7 @@ $router->handleDelete(function($http, $body) {
     
     $http->ok("User successfully deleted.");
 
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 
 ?>

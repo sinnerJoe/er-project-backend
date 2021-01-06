@@ -28,7 +28,7 @@ $router->handlePost(function($http, $body) {
     $solutionId = $solution->createSolution($solutionData);
     saveDiagrams($diagrams, $solutionId);
     $http->ok(null, "Solution created successfully");
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 
 
@@ -44,7 +44,7 @@ $router->handleDelete(function($http, $body) {
 
     $http->ok(null, "Solution successfully deleted.");
 
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 
 
@@ -63,7 +63,7 @@ $router->handlePut(function($http, $body) {
 
     $solution->refreshUpdatedAt($_GET['id']);
     $http->ok(null, "Solution successfully modified.");
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 $router->handleGet(function($http, $body) {
     $sessionData = getSessionData();
@@ -113,7 +113,7 @@ $router->handlePatch(function($http, $body) {
             $http->ok(NULL, 'Solution renamed successfully.');
 
         } else if($_GET['target'] === 'mark') {
-            is_teacher();
+            is_teacher($http, $body);
             $solutionId = $_GET['id'];
             if(!$sessionData->isAdmin) {
                 $reviewerData = $solution->getSolutionReviewer($solutionId);
@@ -124,7 +124,7 @@ $router->handlePatch(function($http, $body) {
             $solution->putMark($solutionId, $sessionData->userId, $body['mark']);
             $http->ok(NULL, 'Mark assigned successfully.');
         }
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 
 ?>

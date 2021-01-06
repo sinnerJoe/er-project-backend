@@ -8,6 +8,8 @@ function getSessionData() {
     $data->userId = $_SESSION['user_id'];
     $data->email = $_SESSION['email'];
     $data->role = (int)$_SESSION['role_level'];
+    $lastFetched = $_SESSION['last_fetch']; 
+    $data->stale = !$lastFetched || (time() - (int) $lastFetched > 60 * 60 * 60 * 24); // the session becomes stale after 10 minutes from the last fetch
     $data->isAdmin = $data->role === 0;
     $data->isTeacher = $data->role === 5;
     $data->isStudent = $data->role === 10;
@@ -21,6 +23,7 @@ function registerSession($userId) {
 }
 
 function loginSession() {
+    session_unset();
     if(session_status() != PHP_SESSION_ACTIVE) {
         return FALSE;
     }
@@ -35,6 +38,7 @@ function loginSession() {
     $_SESSION['user_id'] = $userData['user_id'];
     $_SESSION['role_level'] = $userData['role_level'];
     $_SESSION['authenticated'] = TRUE;
+    $_SESSION['last_fetch'] = time();
 
     return TRUE;
 }
@@ -51,6 +55,7 @@ function logoutSession() {
     unset($_SESSION['user_id'], $sessionData->userId);
     unset($_SESSION['authenticated'], $sessionData->authenticated);
     unset($_SESSION['role_level'], $sessionData->role);
+    unset($_SESSION['last_fetch'], $sessionData->stale);
 
     $user->deleteSession();
     session_start();
@@ -60,6 +65,7 @@ function logoutSession() {
     setcookie(session_name(),'',0,'/');
     session_regenerate_id(true);
 }
+
 
 function deleteOtherSessions() {
     if(session_status() != PHP_SESSION_ACTIVE) {
