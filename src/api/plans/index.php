@@ -43,7 +43,7 @@ $router->handleDelete(function($http, $body) {
     $group->clearPlan($planId);
     $plan->deletePlan($planId);
 
-    $http->ok();
+    $http->ok(null, "Educational plan deleted successfully.");
 
 })->addValidator(is_authenticated_strict);
 
