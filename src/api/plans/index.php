@@ -16,6 +16,9 @@ $router->handleGet(function($http, $body) {
 
     if(isset($_GET['id'])) {
         $data = $plan->fetchPlanById($_GET['id']);
+        if(!$data) {
+            $http->notFound('The plan couldn\'t be found');
+        }
     } else {
         $data = $plan->fetchAllPlans();
     }

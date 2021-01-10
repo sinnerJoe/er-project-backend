@@ -1,0 +1,15 @@
+RewriteEngine on
+
+
+RewriteCond %{REQUEST_URI} !/?api/.+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^((.+)\.(js|css|txt|json|png|jpg|gif|xml))$ front-end/$1 [L]
+
+RewriteCond %{REQUEST_URI} !/?api/.+
+RewriteCond %{REQUEST_URI} !.+\.(js|css|txt|json|png|jpg|gif|xml)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*(\?.+)?$ front-end/index.html$1 [B,PT]
+
+RewriteRule ^$ front-end/index.html [B,PT]

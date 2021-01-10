@@ -18,6 +18,9 @@ $router->handleGet(function ($http) {
     
     if(isset($_GET['id'])) {
         $data = $assignment->getAssignment($_GET['id']);
+        if(!$data) {
+            $http->notFound("Assignment couldn't be found.");
+        }
     } else {
         $data = $assignment->getAllAssignments();
     }
