@@ -130,3 +130,5 @@ CREATE TABLE account_confirmation (
 CREATE VIEW active_user AS (
 	SELECT * FROM user_account ua WHERE disabled = false 
 )
+
+INSERT INTO college_group(name, ed_year) VALUES('A1', YEAR(NOW()));

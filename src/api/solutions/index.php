@@ -83,7 +83,7 @@ $router->handleGet(function($http, $body) {
     $solutions = $solution->getSolutionsOfUser($sessionData->userId);
 
     $http->ok($solutions);
-})->addValidator(is_authenticated);
+})->addValidator(is_authenticated_strict);
 
 
 $router->handlePatch(function($http, $body) {

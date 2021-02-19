@@ -7,12 +7,14 @@ class Database {
     static private $instance;
     private $hostName;
     private $dbname;
-    private $username = "er_admin";
-    private $password = "root";
+    private $username;
+    private $password;
     private $pdo;
 
     public function __construct() {
         $this->pdo = null;
+        $this->username = $_ENV['MYSQL_USER'];
+        $this->password = $_ENV['MYSQL_PASSWORD'];
         $this->hostName = $_ENV["PMA_HOST"];
         $this->dbname = $_ENV["DATABASE_NAME"];
         try {

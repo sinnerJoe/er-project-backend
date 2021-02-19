@@ -21,13 +21,12 @@ services:
     # Pass a list of environment variables to the container
     environment:
       TZ: "Europe/Bucharest"
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: entity_relation_platform
-      MYSQL_USER: er_admin
-      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
 
   er-backend:
-    # image: php:5.6-apache 
     build: ./backend-image
     volumes:
       - ./src:/var/www/html 
@@ -38,8 +37,12 @@ services:
     environment:
       PMA_HOST: mysql
       TZ: "Europe/Bucharest"
-      DATABASE_NAME: entity_relation_platform
+      DATABASE_NAME: ${DB_NAME}
       PROJECT_ENV: development
+      DOMAIN: ${DOMAIN}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+
     depends_on:
       - mysql
 
